@@ -184,11 +184,15 @@
           <span id="orderTotal" class="mono">Rs 0</span>
         </div>
 
-        <form id="detailsForm" novalidate name="CustomerOrder-form" method="POST" data-netlify="true" netlify-honeypot="bot-field">
-          <input type="hidden" name="form-name" value="order-form">
-          <p class="hidden" style="display:none;">
-            <label>Don't fill this out if you're human: <input name="bot-field"></label>
-          </p>
+        <!-- The form name is CustomerOrder-form -->
+<form id="detailsForm" novalidate name="CustomerOrder-form" method="POST" data-netlify="true" netlify-honeypot="bot-field">
+  
+  <!-- FIX: The value must match the form name exactly -->
+  <input type="hidden" name="form-name" value="CustomerOrder-form">
+  
+  <p class="hidden" style="display:none;">
+    <label>Don't fill this out if you're human: <input name="bot-field"></label>
+  </p>
           <input type="hidden" name="order-id" value="">
           <input type="hidden" name="order-details" value="">
           <h3 class="form-section-title">Shipping details</h3>
