@@ -367,10 +367,13 @@ checkoutOverlay.addEventListener("click", (e) => { if (e.target === checkoutOver
 detailsForm.addEventListener("submit", (e) => {
   e.preventDefault();
   const data = new FormData(detailsForm);
+  
+  // Explicitly ensure JavaScript is passing the exact matching name to Netlify
+  data.set("form-name", "CustomerOrder-form");
+
   const name = data.get("name");
   const email = data.get("email");
-
-  const orderId = "KH-" + Math.random().toString(36).slice(2, 8).toUpperCase();
+  const orderId = "PK-" + Math.random().toString(36).slice(2, 8).toUpperCase();
 
   // Build a readable order summary and stash it in the hidden "order-details"
   // field so it shows up inside the Netlify notification email.
@@ -384,13 +387,21 @@ detailsForm.addEventListener("submit", (e) => {
   );
 
   // Submit to Netlify Forms so you get an email notification per order.
-  // Falls through to the confirmation screen either way — see setup notes
-  // for connecting the site to Netlify.
   fetch("/", {
     method: "POST",
     headers: { "Content-Type": "application/x-www-form-urlencoded" },
     body: new URLSearchParams(data).toString(),
-  }).catch(() => { /* offline/local preview — ignore */ });
+  })
+  .then((response) => {
+    if (response.ok) {
+      console.log("Netlify received the order successfully!");
+    } else {
+      console.error("Netlify form submission failed status:", response.status);
+    }
+  })
+  .catch((error) => { 
+    console.error("Network error during submission:", error);
+  });
 
   document.getElementById("confirmName").textContent = name.split(" ")[0] || "friend";
   document.getElementById("confirmOrderId").textContent = orderId;
@@ -410,6 +421,10 @@ document.getElementById("confirmCloseBtn").addEventListener("click", closeChecko
 /* ==========================================================================
    INIT
    ========================================================================== */
+document.getElementById("year").textContent = new Date().getFullYear();
+renderProducts();
+renderCart();
+renderSlideshow();
 document.getElementById("year").textContent = new Date().getFullYear();
 renderProducts();
 renderCart();
