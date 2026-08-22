@@ -40,6 +40,15 @@
    "media" array for any product that only has one photo — remember: if
    "media" isn't set, the code just falls back to "image" automatically.
    ========================================================================== */
+
+/* RING SIZES + ARTICLE COUNTS — shared by every ring / jewelry product
+   below. Change RING_ARTICLE_COUNT or BRACELET_ARTICLE_COUNT here to add
+   or remove article-number options everywhere at once; change RING_SIZES
+   to add/remove ring sizes everywhere at once. */
+const RING_SIZES = ["15.5", "16", "16.5", "17", "17.5", "18", "19/19.5"];
+const RING_ARTICLE_COUNT = 25;     // change this one number for every ring product
+const BRACELET_ARTICLE_COUNT = 10; // change this one number for every other jewelry product
+
 const PRODUCTS = [
   { id: "c1", name: "Off White Ceramic Elevated Dish", category: "ceramics", price: 450, desc: "Condition: 10/10, 4.6 inch diameter bowl ,For Dressing tables and to be used as a trinket dish ", tag: "Must Have", featured: true, image: "images/c13.jpg", stock: 1,
     media: [
@@ -175,40 +184,80 @@ const PRODUCTS = [
       { type: "video", src: "images/s4.mp4" }
     ] },
 
-  /* JEWELRY — 4 mockup products. Replace names/prices/desc/media paths
-     with your real pieces, or delete any of these you don't need. */
-  { id: "j1", name: "Thin Brass Band Ring", category: "jewelry", price: 900, desc: "Adjustable, tarnish-resistant brass.", tag: null, featured: true,
+  /* JEWELRY — gold/silver bracelets, a handcuff bracelet, and gold/silver
+     rings. Replace names/prices/desc/media paths with your real pieces.
+
+     SIZE + ARTICLE SELECTORS (rings only)
+     Rings need TWO choices before they can be added to cart: a ring SIZE
+     and an ARTICLE number. Every specific size+article combination (e.g.
+     "size 17, article 5") is tracked as its own one-of-a-kind piece —
+     once someone adds "size 17 / article 5" to their cart, that exact
+     combination locks for everyone else (same system as the thrift/
+     ceramics one-of-a-kind items above), while every OTHER size/article
+     combo for that same ring stays orderable. A different visitor can
+     still buy "size 17 / article 6" or "size 18 / article 5" at the same
+     time — this only locks the one exact pairing.
+
+     To give a product this behaviour, set:
+       variantType: "ring"        (needs a size + an article number)
+       sizes: RING_SIZES           (the 7 sizes defined below)
+       articleCount: RING_ARTICLE_COUNT   (how many article numbers, 1..N)
+
+     ARTICLE-ONLY SELECTOR (bracelets & anything else jewelry)
+     Every other jewelry product just needs an ARTICLE number (no size).
+     Set:
+       variantType: "article"
+       articleCount: BRACELET_ARTICLE_COUNT
+
+     Change RING_ARTICLE_COUNT / BRACELET_ARTICLE_COUNT below to add or
+     remove article numbers for every ring / every other jewelry product
+     in one place. To give ONE specific product a different count than
+     the rest, just set that product's own articleCount to a different
+     number instead of the shared constant. */
+  { id: "j1", name: "Gold Bracelet", category: "jewelry", price: 3500, desc: "18k gold-plated, adjustable clasp.", tag: null, featured: true,
     image: "images/j1-main.jpg",
     media: [
       { type: "image", src: "images/j1-main.jpg" },
       { type: "image", src: "images/j1-side.jpg" },
       { type: "video", src: "images/j1-video.mp4" }
     ],
-    stock: 3 },
-  { id: "j2", name: "Freshwater Pearl Drop Earrings", category: "jewelry", price: 1400, desc: "Sterling silver hooks, genuine freshwater pearls.", tag: "Must Have",
+    variantType: "article", articleCount: BRACELET_ARTICLE_COUNT },
+
+  { id: "j2", name: "Silver Bracelet", category: "jewelry", price: 2800, desc: "Sterling silver, adjustable clasp.", tag: null,
     image: "images/j2-main.jpg",
     media: [
       { type: "image", src: "images/j2-main.jpg" },
       { type: "image", src: "images/j2-side.jpg" },
       { type: "video", src: "images/j2-video.mp4" }
     ],
-    stock: 5 },
-  { id: "j3", name: "Layered Coin Necklace", category: "jewelry", price: 1800, desc: "Gold-plated, two-layer chain with coin pendant.", tag: null,
+    variantType: "article", articleCount: BRACELET_ARTICLE_COUNT },
+
+  { id: "j3", name: "Hand Cuff Bracelet", category: "jewelry", price: 3200, desc: "Open-cuff style, one-size-fits-most.", tag: null,
     image: "images/j3-main.jpg",
     media: [
       { type: "image", src: "images/j3-main.jpg" },
       { type: "image", src: "images/j3-side.jpg" },
       { type: "video", src: "images/j3-video.mp4" }
     ],
-    stock: 4 },
-  { id: "j4", name: "Chunky Knot Bracelet", category: "jewelry", price: 1100, desc: "Adjustable cord, brass knot charm.", tag: "One of a kind",
+    variantType: "article", articleCount: BRACELET_ARTICLE_COUNT },
+
+  { id: "j4", name: "Gold Ring", category: "jewelry", price: 4200, desc: "18k gold-plated band.", tag: null, featured: true,
     image: "images/j4-main.jpg",
     media: [
       { type: "image", src: "images/j4-main.jpg" },
       { type: "image", src: "images/j4-side.jpg" },
       { type: "video", src: "images/j4-video.mp4" }
     ],
-    stock: 1 },
+    variantType: "ring", sizes: RING_SIZES, articleCount: RING_ARTICLE_COUNT },
+
+  { id: "j5", name: "Silver Ring", category: "jewelry", price: 3000, desc: "Sterling silver band.", tag: null,
+    image: "images/j5-main.jpg",
+    media: [
+      { type: "image", src: "images/j5-main.jpg" },
+      { type: "image", src: "images/j5-side.jpg" },
+      { type: "video", src: "images/j5-video.mp4" }
+    ],
+    variantType: "ring", sizes: RING_SIZES, articleCount: RING_ARTICLE_COUNT },
 ];
 
 const CATEGORY_LABEL = { ceramics: "Ceramics", crochet: "Crochet", thrift: "Thrifted", stickers: "Stickers", jewelry: "Jewelry" };
@@ -247,6 +296,68 @@ function isPreorder(p) { return PREORDER_CATEGORIES.includes(p.category); }
 function exclusiveStatusLabel(p) {
   if (!isExclusive(p)) return "Sold out";
   return claimedItems.get(p.id) === "sold" ? "Sold" : "Reserved";
+}
+
+/* ==========================================================================
+   VARIANT SELECTORS (rings: size + article / other jewelry: article only)
+
+   A specific size+article (or article-only) combination is tracked the
+   exact same way as a one-of-a-kind thrift/ceramics item — a "claim" in
+   Netlify Blobs that's temporarily "reserved" on add-to-cart and becomes
+   permanently "sold" once an order for it completes (see the EXCLUSIVE-
+   ITEM CLAIMS section below). The only difference is the id we claim: for
+   variants it's a composite id built from the product + the exact size/
+   article chosen, e.g. "j4__17__05", instead of just the product id.
+   ========================================================================== */
+function hasVariants(p) { return p.variantType === "ring" || p.variantType === "article"; }
+function isRingVariant(p) { return p.variantType === "ring"; }
+
+/* Builds the composite claim/cart key for one exact size+article (or
+   article-only) combination of a variant product. */
+function variantKey(p, size, article) {
+  return isRingVariant(p) ? `${p.id}__${size}__${article}` : `${p.id}__${article}`;
+}
+
+/* Given a cart/claim key, figures out which product (and, for variant
+   keys, which size/article) it refers to. Works for plain product ids too. */
+function parseCartKey(key) {
+  const parts = key.split("__");
+  const product = PRODUCTS.find(pp => pp.id === parts[0]);
+  if (!product) return { product: null };
+  if (hasVariants(product) && isRingVariant(product) && parts.length >= 3) {
+    return { product, size: parts[1], article: parts[2] };
+  }
+  if (hasVariants(product) && !isRingVariant(product) && parts.length >= 2) {
+    return { product, article: parts[1] };
+  }
+  return { product };
+}
+
+/* Every possible size+article (or article-only) combination a variant
+   product can be ordered in. */
+function allVariantCombos(p) {
+  const combos = [];
+  if (isRingVariant(p)) {
+    for (const size of p.sizes) {
+      for (let a = 1; a <= p.articleCount; a++) combos.push({ size, article: String(a) });
+    }
+  } else if (hasVariants(p)) {
+    for (let a = 1; a <= p.articleCount; a++) combos.push({ article: String(a) });
+  }
+  return combos;
+}
+
+/* Is this exact combo still orderable? True if it's sitting in THIS
+   browser's own cart (we're already holding it), or if nobody else has
+   claimed it yet. */
+function isComboAvailable(p, combo) {
+  const key = variantKey(p, combo.size, combo.article);
+  if (cart[key]) return true;
+  return !claimedItems.has(key);
+}
+
+function productHasAnyAvailableCombo(p) {
+  return allVariantCombos(p).some(c => isComboAvailable(p, c));
 }
 
 /* ==========================================================================
@@ -339,6 +450,16 @@ function renderProducts() {
     btn.addEventListener("click", async (e) => {
       e.stopPropagation();
       const id = btn.dataset.add;
+      const p = PRODUCTS.find(pp => pp.id === id);
+
+      // Variant products (rings, and other jewelry with an article
+      // selector) can't be added straight from the grid — they need a
+      // size/article chosen first, so just open the product page instead.
+      if (p && hasVariants(p)) {
+        openProduct(id);
+        return;
+      }
+
       btn.disabled = true;
       btn.textContent = "Adding…";
       const added = await addToCart(id);
@@ -354,20 +475,27 @@ function renderProducts() {
 }
 
 function productCardHTML(p) {
-  const inCart = cart[p.id] || 0;
-  const stock = stockOf(p.id);
-  const soldOut = stock <= 0 && inCart <= 0;
-  const maxedOut = inCart >= stock;
+  const variant = hasVariants(p);
+  const inCart = variant ? 0 : (cart[p.id] || 0);
+  const stock = variant ? null : stockOf(p.id);
+  const soldOut = variant ? !productHasAnyAvailableCombo(p) : (stock <= 0 && inCart <= 0);
+  const maxedOut = variant ? false : (inCart >= stock);
   const preorder = isPreorder(p);
 
   let badgeTag = "";
   if (soldOut) {
-    badgeTag = `<span class="card-tag">${exclusiveStatusLabel(p)}</span>`;
+    badgeTag = `<span class="card-tag">${variant ? "Sold out" : exclusiveStatusLabel(p)}</span>`;
   } else if (preorder) {
     badgeTag = `<span class="card-tag card-tag-preorder">Preorder</span>`;
   } else if (p.tag) {
     badgeTag = `<span class="card-tag">${p.tag}</span>`;
   }
+
+  const addLabel = soldOut
+    ? (variant ? "Sold out" : exclusiveStatusLabel(p))
+    : variant
+      ? (isRingVariant(p) ? "Choose size & article" : "Choose article")
+      : (maxedOut ? "In cart" : "Add to cart");
 
   return `
     <article class="card" data-id="${p.id}" tabindex="0" role="button" aria-label="View ${p.name}">
@@ -381,7 +509,7 @@ function productCardHTML(p) {
         <p class="card-desc">${p.desc}</p>
         <div class="card-foot">
           <span class="card-price mono">Rs ${p.price.toLocaleString()}</span>
-          <button class="add-btn" data-add="${p.id}" ${soldOut || maxedOut ? "disabled" : ""}>${soldOut ? exclusiveStatusLabel(p) : (maxedOut ? "In cart" : "Add to cart")}</button>
+          <button class="add-btn${variant ? " add-btn-select" : ""}" data-add="${p.id}" ${soldOut ? "disabled" : ""}>${addLabel}</button>
         </div>
       </div>
     </article>
@@ -498,18 +626,19 @@ function renderProductModal() {
   if (!p) return;
 
   const media = getMedia(p);
-  const inCart = cart[p.id] || 0;
-  const stock = stockOf(p.id);
-  const soldOut = stock <= 0 && inCart <= 0;
-  const maxedOut = inCart >= stock;
+  const variant = hasVariants(p);
   const preorder = isPreorder(p);
+
+  const soldOutWhole = variant
+    ? !productHasAnyAvailableCombo(p)
+    : (stockOf(p.id) <= 0 && !(cart[p.id] || 0));
 
   document.getElementById("productTitle").textContent = p.name;
   document.getElementById("productBadge").textContent = CATEGORY_LABEL[p.category];
 
   const tagEl = document.getElementById("productTag");
   let tagText = "";
-  if (soldOut) tagText = exclusiveStatusLabel(p);
+  if (soldOutWhole) tagText = variant ? "Sold out" : exclusiveStatusLabel(p);
   else if (preorder) tagText = "Preorder";
   else if (p.tag) tagText = p.tag;
   if (tagText) { tagEl.textContent = tagText; tagEl.hidden = false; } else { tagEl.hidden = true; }
@@ -517,16 +646,38 @@ function renderProductModal() {
   document.getElementById("productDesc").textContent = p.desc;
   document.getElementById("productPrice").textContent = `Rs ${p.price.toLocaleString()}`;
 
+  const variantsEl = document.getElementById("productVariants");
   const addBtn = document.getElementById("productAddBtn");
-  addBtn.disabled = soldOut || maxedOut;
-  addBtn.textContent = soldOut ? exclusiveStatusLabel(p) : (maxedOut ? "In cart" : "Add to cart");
-  addBtn.onclick = async () => {
-    addBtn.disabled = true;
-    addBtn.textContent = "Adding…";
-    const added = await addToCart(p.id);
-    if (!added) renderProducts();
-    renderProductModal();
-  };
+
+  if (variant) {
+    if (soldOutWhole) {
+      variantsEl.hidden = true;
+      variantsEl.innerHTML = "";
+      addBtn.onclick = null;
+      addBtn.disabled = true;
+      addBtn.textContent = "Sold out";
+    } else {
+      variantsEl.hidden = false;
+      variantsEl.innerHTML = buildVariantSelectorsHTML(p);
+      wireVariantSelectors(p); // sets addBtn's label/disabled state + onclick
+    }
+  } else {
+    variantsEl.hidden = true;
+    variantsEl.innerHTML = "";
+    const inCart = cart[p.id] || 0;
+    const stock = stockOf(p.id);
+    const soldOut = stock <= 0 && inCart <= 0;
+    const maxedOut = inCart >= stock;
+    addBtn.disabled = soldOut || maxedOut;
+    addBtn.textContent = soldOut ? exclusiveStatusLabel(p) : (maxedOut ? "In cart" : "Add to cart");
+    addBtn.onclick = async () => {
+      addBtn.disabled = true;
+      addBtn.textContent = "Adding…";
+      const added = await addToCart(p.id);
+      if (!added) renderProducts();
+      renderProductModal();
+    };
+  }
 
   productSlideTrack.innerHTML = media.map((m, i) => `
     <div class="p-slide${i === 0 ? " is-active" : ""}" data-p-slide="${i}">
@@ -547,6 +698,97 @@ function renderProductModal() {
   productSlidePrev.hidden = media.length <= 1;
   productSlideNext.hidden = media.length <= 1;
   productSlideIndex = 0;
+}
+
+/* Builds the markup for a variant product's selector row: a size <select>
+   (rings only) plus an article <select>. Options are populated/refreshed
+   in wireVariantSelectors() below, since article availability depends on
+   which size is picked (for rings). */
+function buildVariantSelectorsHTML(p) {
+  const sizeField = isRingVariant(p) ? `
+    <label class="variant-field">
+      <span>Size</span>
+      <select id="variantSize">
+        <option value="">Choose size…</option>
+        ${p.sizes.map(s => `<option value="${s}">${s}</option>`).join("")}
+      </select>
+    </label>` : "";
+
+  return `
+    <div class="variant-fields${isRingVariant(p) ? "" : " variant-fields-single"}">
+      ${sizeField}
+      <label class="variant-field">
+        <span>Article no.</span>
+        <select id="variantArticle"><option value="">Choose article…</option></select>
+      </label>
+    </div>
+  `;
+}
+
+/* Wires up the size/article <select> elements: populates article options
+   (disabling any exact combo someone else already has), keeps the Add to
+   cart button's label/enabled-state in sync with the current selection,
+   and handles the actual add-to-cart click. */
+function wireVariantSelectors(p) {
+  const sizeSel = document.getElementById("variantSize");
+  const articleSel = document.getElementById("variantArticle");
+  const addBtn = document.getElementById("productAddBtn");
+
+  function currentSelection() {
+    return {
+      size: isRingVariant(p) ? (sizeSel ? sizeSel.value : "") : null,
+      article: articleSel ? articleSel.value : "",
+    };
+  }
+
+  function updateAddButtonState() {
+    const { size, article } = currentSelection();
+    const ready = isRingVariant(p) ? !!(size && article) : !!article;
+    if (!ready) {
+      addBtn.disabled = true;
+      addBtn.textContent = isRingVariant(p) ? "Choose size & article" : "Choose an article";
+      return;
+    }
+    const available = isComboAvailable(p, { size, article });
+    addBtn.disabled = !available;
+    addBtn.textContent = available ? "Add to cart" : "Just taken — pick another";
+  }
+
+  function refreshArticleOptions() {
+    const size = isRingVariant(p) ? (sizeSel ? sizeSel.value : "") : null;
+
+    if (isRingVariant(p) && !size) {
+      articleSel.innerHTML = `<option value="">Choose size first…</option>`;
+      articleSel.disabled = true;
+      updateAddButtonState();
+      return;
+    }
+
+    articleSel.disabled = false;
+    const opts = [`<option value="">Choose article…</option>`];
+    for (let a = 1; a <= p.articleCount; a++) {
+      const article = String(a);
+      const available = isComboAvailable(p, { size, article });
+      opts.push(`<option value="${article}" ${available ? "" : "disabled"}>Article ${article}${available ? "" : " — taken"}</option>`);
+    }
+    articleSel.innerHTML = opts.join("");
+    updateAddButtonState();
+  }
+
+  addBtn.onclick = async () => {
+    const { size, article } = currentSelection();
+    if (!article || (isRingVariant(p) && !size)) return;
+    addBtn.disabled = true;
+    addBtn.textContent = "Adding…";
+    const added = await addToCart(p.id, { size, article });
+    if (!added) renderProducts();
+    renderProductModal(); // fresh selectors + up-to-date availability, ready to add another
+  };
+
+  if (sizeSel) sizeSel.addEventListener("change", refreshArticleOptions);
+  articleSel.addEventListener("change", updateAddButtonState);
+
+  refreshArticleOptions();
 }
 
 function goToProductSlide(i) {
@@ -683,8 +925,18 @@ function saveCart() {
 }
 
 function stockOf(id) {
-  const p = PRODUCTS.find(p => p.id === id);
+  const parsed = parseCartKey(id);
+  const p = parsed.product;
   if (!p) return 0;
+
+  if (parsed.size != null || parsed.article != null) {
+    // A specific size+article (or article-only) combo — same one-of-a-
+    // kind logic as an exclusive product, just keyed by the combo instead
+    // of the product itself.
+    if (cart[id]) return 1;
+    return claimedItems.has(id) ? 0 : 1;
+  }
+
   if (isExclusive(p)) {
     // One-of-a-kind: available (1) unless someone else has already
     // claimed it. If it's already sitting in THIS browser's cart, it
@@ -695,67 +947,90 @@ function stockOf(id) {
   return (p.stock != null) ? p.stock : Infinity;
 }
 
-async function addToCart(id) {
+/* variant: { size, article } — only needed for products where
+   hasVariants(p) is true. Ignored otherwise. */
+async function addToCart(id, variant = null) {
   const p = PRODUCTS.find(pp => pp.id === id);
   if (!p) return false;
-  const current = cart[id] || 0;
-  if (current >= stockOf(id)) return false;
 
-  if (isExclusive(p) && current === 0) {
-    const ok = await claimItem(id);
+  if (hasVariants(p)) {
+    if (!variant || !variant.article || (isRingVariant(p) && !variant.size)) return false;
+  }
+
+  const key = hasVariants(p) ? variantKey(p, variant.size, variant.article) : id;
+  const current = cart[key] || 0;
+  if (current >= stockOf(key)) return false;
+
+  const needsClaim = hasVariants(p) || isExclusive(p);
+  if (needsClaim && current === 0) {
+    const ok = await claimItem(key);
     if (!ok) {
       // Someone else has it — reflect that immediately. We don't know
       // whether it's "sold" or just "reserved" until the next poll, so
       // assume the more likely case (still reserved) for now.
-      if (!claimedItems.has(id)) claimedItems.set(id, "reserved");
+      if (!claimedItems.has(key)) claimedItems.set(key, "reserved");
       return false;
     }
   }
 
-  cart[id] = current + 1;
+  cart[key] = current + 1;
   saveCart();
   renderCart();
   return true;
 }
 
-function setQty(id, qty) {
-  qty = Math.min(qty, stockOf(id));
-  const p = PRODUCTS.find(pp => pp.id === id);
-  const wasInCart = !!cart[id];
+function setQty(key, qty) {
+  qty = Math.min(qty, stockOf(key));
+  const parsed = parseCartKey(key);
+  const p = parsed.product;
+  const isVariantLine = parsed.size != null || parsed.article != null;
+  const wasInCart = !!cart[key];
+  const needsRelease = isVariantLine || (p && isExclusive(p));
 
   if (qty <= 0) {
-    delete cart[id];
-    if (wasInCart && p && isExclusive(p)) {
-      claimedItems.delete(id);
-      releaseItem(id);
+    delete cart[key];
+    if (wasInCart && needsRelease) {
+      claimedItems.delete(key);
+      releaseItem(key);
     }
   } else {
-    cart[id] = qty;
+    cart[key] = qty;
   }
   saveCart();
   renderCart();
   renderProducts();
-  if (currentProductId === id) renderProductModal();
+  if (p && currentProductId === p.id) renderProductModal();
 }
 
-function removeFromCart(id) {
-  const p = PRODUCTS.find(pp => pp.id === id);
-  const wasInCart = !!cart[id];
-  delete cart[id];
+function removeFromCart(key) {
+  const parsed = parseCartKey(key);
+  const p = parsed.product;
+  const isVariantLine = parsed.size != null || parsed.article != null;
+  const wasInCart = !!cart[key];
+  const needsRelease = isVariantLine || (p && isExclusive(p));
+
+  delete cart[key];
   saveCart();
   renderCart();
   renderProducts();
-  if (currentProductId === id) renderProductModal();
-  if (wasInCart && p && isExclusive(p)) {
-    claimedItems.delete(id);
-    releaseItem(id);
+  if (p && currentProductId === p.id) renderProductModal();
+  if (wasInCart && needsRelease) {
+    claimedItems.delete(key);
+    releaseItem(key);
   }
 }
 
 function cartLines() {
   return Object.entries(cart)
-    .map(([id, qty]) => ({ product: PRODUCTS.find(p => p.id === id), qty }))
-    .filter(line => line.product);
+    .map(([key, qty]) => {
+      const parsed = parseCartKey(key);
+      if (!parsed.product) return null;
+      const variantInfo = (parsed.size != null || parsed.article != null)
+        ? { size: parsed.size || null, article: parsed.article }
+        : null;
+      return { key, product: parsed.product, variant: variantInfo, qty };
+    })
+    .filter(Boolean);
 }
 
 function cartSubtotal() {
@@ -777,17 +1052,19 @@ function renderCart() {
   checkoutBtn.disabled = lines.length === 0;
 
   cartItemsEl.innerHTML = lines.map(line => `
-    <div class="cart-item" data-line="${line.product.id}">
+    <div class="cart-item" data-line="${line.key}">
       <div class="cart-item-photo">${line.product.image ? `<img src="${line.product.image}" alt="${line.product.name}" loading="lazy">` : CATEGORY_ICON[line.product.category]}</div>
       <div class="cart-item-info">
-        <p class="cart-item-name">${line.product.name}</p>
+        <p class="cart-item-name">${line.product.name}${variantLabelHTML(line.variant)}</p>
         <p class="cart-item-price mono">Rs ${line.product.price.toLocaleString()}</p>
         <div class="cart-item-row-end">
-          <div class="qty-stepper">
-            <button data-step="-1" aria-label="Decrease quantity">–</button>
-            <span>${line.qty}</span>
-            <button data-step="1" aria-label="Increase quantity" ${line.qty >= stockOf(line.product.id) ? "disabled" : ""}>+</button>
-          </div>
+          ${line.variant
+            ? `<span class="qty-fixed">Qty: 1</span>`
+            : `<div class="qty-stepper">
+                <button data-step="-1" aria-label="Decrease quantity">–</button>
+                <span>${line.qty}</span>
+                <button data-step="1" aria-label="Increase quantity" ${line.qty >= stockOf(line.product.id) ? "disabled" : ""}>+</button>
+              </div>`}
           <button class="cart-item-remove" data-remove>Remove</button>
         </div>
       </div>
@@ -799,12 +1076,23 @@ function renderCart() {
   if (cartTotalEl) cartTotalEl.textContent = `Rs ${cartTotal().toLocaleString()}`;
 
   cartItemsEl.querySelectorAll(".cart-item").forEach(row => {
-    const id = row.dataset.line;
-    const currentQty = cart[id] || 0;
-    row.querySelector('[data-step="-1"]').addEventListener("click", () => setQty(id, currentQty - 1));
-    row.querySelector('[data-step="1"]').addEventListener("click", () => setQty(id, currentQty + 1));
-    row.querySelector('[data-remove]').addEventListener("click", () => removeFromCart(id));
+    const key = row.dataset.line;
+    const currentQty = cart[key] || 0;
+    const stepMinus = row.querySelector('[data-step="-1"]');
+    const stepPlus = row.querySelector('[data-step="1"]');
+    if (stepMinus) stepMinus.addEventListener("click", () => setQty(key, currentQty - 1));
+    if (stepPlus) stepPlus.addEventListener("click", () => setQty(key, currentQty + 1));
+    row.querySelector('[data-remove]').addEventListener("click", () => removeFromCart(key));
   });
+}
+
+/* Small " — Size 17, Article 5" / " — Article 5" suffix for cart rows. */
+function variantLabelHTML(variant) {
+  if (!variant) return "";
+  const parts = [];
+  if (variant.size) parts.push(`Size ${variant.size}`);
+  parts.push(`Article ${variant.article}`);
+  return ` <span class="cart-item-variant">— ${parts.join(", ")}</span>`;
 }
 
 /* ==========================================================================
@@ -832,7 +1120,7 @@ function openCheckout() {
 
   orderSummary.innerHTML = cartLines().map(line => `
     <div class="order-summary-row">
-      <span>${line.qty} × ${line.product.name}</span>
+      <span>${line.qty} × ${line.product.name}${variantLabelHTML(line.variant)}</span>
       <span class="mono">Rs ${(line.product.price * line.qty).toLocaleString()}</span>
     </div>
   `).join("");
@@ -879,7 +1167,12 @@ detailsForm.addEventListener("submit", async (e) => {
   // Build a readable order summary and stash it in the hidden "order-details"
   // field so it shows up inside the Netlify notification email.
   const summaryText = cartLines()
-    .map(line => `${line.qty} x ${line.product.name} - Rs ${(line.product.price * line.qty).toLocaleString()}`)
+    .map(line => {
+      const variantText = line.variant
+        ? ` (${[line.variant.size ? `Size ${line.variant.size}` : null, `Article ${line.variant.article}`].filter(Boolean).join(", ")})`
+        : "";
+      return `${line.qty} x ${line.product.name}${variantText} - Rs ${(line.product.price * line.qty).toLocaleString()}`;
+    })
     .join("\n");
   data.set("order-id", orderId);
   data.set("order-details",
@@ -905,12 +1198,12 @@ detailsForm.addEventListener("submit", async (e) => {
   });
 
   // The order is now actually going through — THIS is the moment any
-  // one-of-a-kind items in it flip from a temporary "reserved" hold to
-  // permanently "sold" and gone from stock for good.
+  // one-of-a-kind items (or one-of-a-kind size/article combos) in it
+  // flip from a temporary "reserved" hold to permanently "sold" and gone
+  // from stock for good.
   const exclusiveIds = cartLines()
-    .map(line => line.product)
-    .filter(isExclusive)
-    .map(p => p.id);
+    .filter(line => line.variant || isExclusive(line.product))
+    .map(line => line.key);
   await finalizeExclusiveOrder(exclusiveIds);
 
   document.getElementById("confirmName").textContent = name.split(" ")[0] || "friend";
