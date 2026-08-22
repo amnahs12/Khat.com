@@ -1,6 +1,6 @@
 /* ==========================================================================
    PRODUCTS — edit this list to match your real inventory.
-   category must be one of: ceramics | crochet | thrift | stickers | jewelry | necklace
+   category must be one of: ceramics | crochet | thrift | stickers | jewelry
 
    Prices are in PKR (whole rupees, no decimals).
 
@@ -19,7 +19,7 @@
    for unlimited/made-to-order items. Once someone's cart hits the stock
    number, the "Add to cart" button disables and the + stepper stops going
    higher. Set stock to 0 to mark something sold out right away.
-   NOTE: stock is only used for crochet / stickers / jewelry / necklace. Every other
+   NOTE: stock is only used for crochet / stickers / jewelry. Every other
    category (ceramics, thrift, and any new category you add) is treated as
    one-of-a-kind automatically — see the "EXCLUSIVE ITEMS" note lower down.
 
@@ -290,10 +290,12 @@ const PRODUCTS = [
     variantType: "ring", sizes: RING_SIZES, articleCount: RING_ARTICLE_COUNT,
     sizeArticleStock: {} },
 
-  /* NECKLACES — new category. Works exactly like the bracelets above:
-     article-only selector, and articleStock for any article number that
-     has more than one piece. */
-  { id: "n1", name: "Gold Chain Necklace", category: "necklace", price: 3800, desc: "18k gold-plated, adjustable length.", tag: null, featured: true,
+  /* NECKLACES — same "jewelry" category as the bracelets/rings above
+     (shows up under the same Jewelry filter pill), just a different kind
+     of piece. Works exactly like the bracelets: article-only selector,
+     and articleStock for any article number that has more than one
+     piece. */
+  { id: "n1", name: "Gold Chain Necklace", category: "jewelry", price: 3800, desc: "18k gold-plated, adjustable length.", tag: null, featured: true,
     image: "images/n1-main.jpg",
     media: [
       { type: "image", src: "images/n1-main.jpg" },
@@ -303,7 +305,7 @@ const PRODUCTS = [
     variantType: "article", articleCount: BRACELET_ARTICLE_COUNT,
     articleStock: {} },
 
-  { id: "n2", name: "Silver Pendant Necklace", category: "necklace", price: 3200, desc: "Sterling silver chain with pendant.", tag: null,
+  { id: "n2", name: "Silver Pendant Necklace", category: "jewelry", price: 3200, desc: "Sterling silver chain with pendant.", tag: null,
     image: "images/n2-main.jpg",
     media: [
       { type: "image", src: "images/n2-main.jpg" },
@@ -314,7 +316,7 @@ const PRODUCTS = [
     articleStock: {} },
 ];
 
-const CATEGORY_LABEL = { ceramics: "Ceramics", crochet: "Crochet", thrift: "Thrifted", stickers: "Stickers", jewelry: "Jewelry", necklace: "Necklaces" };
+const CATEGORY_LABEL = { ceramics: "Ceramics", crochet: "Crochet", thrift: "Thrifted", stickers: "Stickers", jewelry: "Jewelry" };
 
 /* Flat delivery charge (PKR) added to every order. Change this one number
    whenever your delivery cost changes — nothing else needs editing. */
@@ -327,7 +329,6 @@ const CATEGORY_ICON = {
   thrift: `<svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M24 8a4 4 0 1 1 4 4l-4 4 18 12H6l18-12-4-4"/><line x1="6" y1="32" x2="42" y2="32"/></svg>`,
   stickers: `<svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"><path d="M10 10h20l8 8v20H10V10z"/><path d="M30 10v8h8"/><circle cx="19" cy="19" r="1.6" fill="currentColor" stroke="none"/></svg>`,
   jewelry: `<svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round" stroke-linecap="round"><path d="M14 10h20l6 9-16 19-16-19z"/><path d="M14 10l4 9-4-9zM34 10l-4 9 4-9zM8 19h32M18 19l6 19 6-19"/></svg>`,
-  necklace: `<svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M10 8c0 10 6 17 14 17s14-7 14-17"/><circle cx="24" cy="30" r="4.5"/></svg>`,
 };
 
 /* Categories where products are NOT one-of-a-kind — normal per-browser
@@ -335,7 +336,7 @@ const CATEGORY_ICON = {
    (ceramics, thrift, and anything new you add later) is treated as
    EXCLUSIVE below: once one visitor adds it to their cart, it locks for
    everyone else, everywhere, until they remove it or the order ships. */
-const NON_EXCLUSIVE_CATEGORIES = ["crochet", "stickers", "jewelry", "necklace"];
+const NON_EXCLUSIVE_CATEGORIES = ["crochet", "stickers", "jewelry"];
 
 /* Categories that always show a "Preorder" badge, regardless of the
    product's own "tag" field. */
