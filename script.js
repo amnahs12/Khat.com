@@ -111,7 +111,7 @@ const PRODUCTS = [
       { type: "video", src: "images/r4.mp4" }
     ] },
 
-  { id: "t1", name: "Vinatge IKEA Candle Holder", category: "thrift", price: 300, desc: "Condition: 10/9 Ice Blue VTG Ikea.Diameter:2.95 in approx , Height:1.02 inch approx", tag: "Vintage", featured: true, image: "images/c2.jpg", stock: 1,
+  { id: "t1", name: "Vintage IKEA Candle Holder", category: "thrift", price: 300, desc: "Condition: 10/9 Ice Blue VTG Ikea.Diameter:2.95 in approx , Height:1.02 inch approx", tag: "Vintage", featured: true, image: "images/c2.jpg", stock: 1,
     media: [
       { type: "image", src: "images/c2.jpg" },
       { type: "image", src: "images2/c2-2.jpg" },
@@ -147,7 +147,7 @@ const PRODUCTS = [
       { type: "image", src: "images2/c12-2.jpg" },
       { type: "video", src: "images/c12.mp4" }
     ] },
-  { id: "t7", name: "101 Wipe Off Iq Challenges", category: "thrift", price: 500, desc: "Condition: 10/8(a little rough on the exterior of the box), Comes with Duster and mini Marker.", tag: "One of a kind", image: "images/c14.jpg", stock: 1,
+  { id: "t7", name: "101 Wipe Off IQ Challenges", category: "thrift", price: 500, desc: "Condition: 10/8(a little rough on the exterior of the box), Comes with Duster and mini Marker.", tag: "One of a kind", image: "images/c14.jpg", stock: 1,
     media: [
       { type: "image", src: "images/c14.jpg" },
       { type: "image", src: "images2/c14-2.jpg" },
