@@ -87,6 +87,7 @@
           <button class="pill" data-filter="crochet">Crochet</button>
           <button class="pill" data-filter="thrift">Thrifted</button>
           <button class="pill" data-filter="stickers">Stickers</button>
+          <button class="pill" data-filter="jewelry">Jewelry</button>
         </div>
 
         <label class="sort-label" for="sortSelect">
@@ -155,6 +156,40 @@
     <button class="btn btn-primary btn-full" id="checkoutBtn">Checkout</button>
   </div>
 </aside>
+
+<!-- ============ PRODUCT DETAIL MODAL ============ -->
+<div class="modal-overlay" id="productOverlay">
+  <div class="modal product-modal" role="dialog" aria-modal="true" aria-labelledby="productTitle">
+    <div class="modal-head">
+      <h2 id="productTitle">Product</h2>
+      <button class="icon-btn" id="productCloseBtn" aria-label="Close">
+        <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M5 5l14 14M19 5L5 19"/></svg>
+      </button>
+    </div>
+    <div class="modal-body product-modal-body">
+      <div class="product-slideshow" id="productSlideshow">
+        <div class="product-slide-track" id="productSlideTrack"></div>
+        <button class="slide-nav slide-prev" id="productSlidePrev" aria-label="Previous">
+          <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M15 5l-7 7 7 7"/></svg>
+        </button>
+        <button class="slide-nav slide-next" id="productSlideNext" aria-label="Next">
+          <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M9 5l7 7-7 7"/></svg>
+        </button>
+        <div class="slide-dots" id="productSlideDots"></div>
+      </div>
+
+      <div class="product-info">
+        <div class="product-info-badges">
+          <span class="card-badge" id="productBadge"></span>
+          <span class="card-tag product-tag-inline" id="productTag" hidden></span>
+        </div>
+        <p class="product-desc" id="productDesc"></p>
+        <p class="product-price mono" id="productPrice"></p>
+        <button class="btn btn-primary btn-full" id="productAddBtn">Add to cart</button>
+      </div>
+    </div>
+  </div>
+</div>
 
 <!-- ============ CHECKOUT MODAL ============ -->
 <div class="modal-overlay" id="checkoutOverlay">
