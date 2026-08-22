@@ -652,6 +652,32 @@ button { cursor: pointer; }
 .product-desc { font-size: 0.88rem; color: var(--parchment-deep); margin: 0 0 14px; line-height: 1.5; }
 .product-price { font-size: 1.3rem; font-weight: 700; color: var(--parchment-pale); margin: 0 0 16px; }
 
+/* Size + article selectors on a variant product's detail page */
+.product-variants { margin-bottom: 16px; }
+.variant-fields { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.variant-fields.variant-fields-single { grid-template-columns: 1fr; }
+.variant-field { display: block; font-size: 0.82rem; font-weight: 600; color: var(--parchment); }
+.variant-field span { display: block; margin-bottom: 5px; }
+.variant-field select {
+  width: 100%;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  padding: 10px 12px;
+  font-size: 0.9rem;
+  font-weight: 400;
+  color: var(--navy);
+  background: var(--parchment-pale);
+}
+.variant-field select:disabled { opacity: 0.6; }
+.variant-field select:focus { border-color: var(--oxblood-light); outline: none; }
+
+/* Size/article label on cart + checkout summary rows */
+.cart-item-variant { font-weight: 400; color: var(--parchment-deep); font-size: 0.8em; }
+.qty-fixed { font-family: var(--font-mono); font-size: 0.82rem; color: var(--parchment-deep); }
+
+/* Grid card button for a variant product ("Choose size & article" etc.) */
+.add-btn-select { font-size: 0.78rem; }
+
 /* ==========================================================================
    Responsive
    ========================================================================== */
