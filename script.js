@@ -1,6 +1,6 @@
 /* ==========================================================================
    PRODUCTS — edit this list to match your real inventory.
-   category must be one of: ceramics | crochet | thrift | stickers | jewelry
+   category must be one of: ceramics | crochet | thrift | stickers | jewelry | necklace
 
    Prices are in PKR (whole rupees, no decimals).
 
@@ -19,7 +19,7 @@
    for unlimited/made-to-order items. Once someone's cart hits the stock
    number, the "Add to cart" button disables and the + stepper stops going
    higher. Set stock to 0 to mark something sold out right away.
-   NOTE: stock is only used for crochet / stickers / jewelry. Every other
+   NOTE: stock is only used for crochet / stickers / jewelry / necklace. Every other
    category (ceramics, thrift, and any new category you add) is treated as
    one-of-a-kind automatically — see the "EXCLUSIVE ITEMS" note lower down.
 
@@ -48,6 +48,28 @@
 const RING_SIZES = ["15.5", "16", "16.5", "17", "17.5", "18", "19/19.5"];
 const RING_ARTICLE_COUNT = 25;     // change this one number for every ring product
 const BRACELET_ARTICLE_COUNT = 10; // change this one number for every other jewelry product
+
+/* PER-ARTICLE / PER-SIZE STOCK — how many physical pieces you actually
+   have of one specific article number (or, for rings, one specific
+   size + article combo).
+
+   Every article/combo defaults to a stock of 1 (one-of-a-kind, same as
+   before) unless you list it here. You only need to list the ones that
+   have MORE than one piece — anything not listed stays at 1.
+
+   ARTICLE-ONLY products (bracelets, handcuff bracelet, necklaces) use an
+   object keyed by article number:
+     articleStock: { "3": 2, "8": 9 }   // Article 3 has 2 pieces, Article 8 has 9
+
+   RING products use an object keyed by "size__article":
+     sizeArticleStock: { "17__3": 2, "18__8": 9 }
+     // Size 17 / Article 3 has 2 pieces, Size 18 / Article 8 has 9 pieces
+     // (Size 17 / Article 8 and Size 18 / Article 3 are untouched — still 1 each)
+
+   Under the hood each piece of stock gets its own internal claim slot, so
+   when two different customers each buy one of Article 3's 2 pieces, the
+   first purchase locks only ONE of those two slots — the other stays
+   orderable until it's gone too. */
 
 const PRODUCTS = [
   { id: "c1", name: "Off White Ceramic Elevated Dish", category: "ceramics", price: 450, desc: "Condition: 10/10, 4.6 inch diameter bowl ,For Dressing tables and to be used as a trinket dish ", tag: "Must Have", featured: true, image: "images/c13.jpg", stock: 1,
@@ -221,7 +243,10 @@ const PRODUCTS = [
       { type: "image", src: "images/j1-side.jpg" },
       { type: "video", src: "images/j1-video.mp4" }
     ],
-    variantType: "article", articleCount: BRACELET_ARTICLE_COUNT },
+    variantType: "article", articleCount: BRACELET_ARTICLE_COUNT,
+    // Example: Article 3 has 2 pieces, Article 8 has 9 pieces. Every other
+    // article number (1,2,4,5,6,7,9,10) stays at the default of 1.
+    articleStock: { "3": 2, "8": 9 } },
 
   { id: "j2", name: "Silver Bracelet", category: "jewelry", price: 2800, desc: "Sterling silver, adjustable clasp.", tag: null,
     image: "images/j2-main.jpg",
@@ -230,7 +255,8 @@ const PRODUCTS = [
       { type: "image", src: "images/j2-side.jpg" },
       { type: "video", src: "images/j2-video.mp4" }
     ],
-    variantType: "article", articleCount: BRACELET_ARTICLE_COUNT },
+    variantType: "article", articleCount: BRACELET_ARTICLE_COUNT,
+    articleStock: {} },
 
   { id: "j3", name: "Hand Cuff Bracelet", category: "jewelry", price: 3200, desc: "Open-cuff style, one-size-fits-most.", tag: null,
     image: "images/j3-main.jpg",
@@ -239,7 +265,8 @@ const PRODUCTS = [
       { type: "image", src: "images/j3-side.jpg" },
       { type: "video", src: "images/j3-video.mp4" }
     ],
-    variantType: "article", articleCount: BRACELET_ARTICLE_COUNT },
+    variantType: "article", articleCount: BRACELET_ARTICLE_COUNT,
+    articleStock: {} },
 
   { id: "j4", name: "Gold Ring", category: "jewelry", price: 4200, desc: "18k gold-plated band.", tag: null, featured: true,
     image: "images/j4-main.jpg",
@@ -248,7 +275,10 @@ const PRODUCTS = [
       { type: "image", src: "images/j4-side.jpg" },
       { type: "video", src: "images/j4-video.mp4" }
     ],
-    variantType: "ring", sizes: RING_SIZES, articleCount: RING_ARTICLE_COUNT },
+    variantType: "ring", sizes: RING_SIZES, articleCount: RING_ARTICLE_COUNT,
+    // Example: Size 17/Article 3 has 2 pieces, Size 18/Article 8 has 9.
+    // Every other size+article combo stays at the default of 1.
+    sizeArticleStock: { "17__3": 2, "18__8": 9 } },
 
   { id: "j5", name: "Silver Ring", category: "jewelry", price: 3000, desc: "Sterling silver band.", tag: null,
     image: "images/j5-main.jpg",
@@ -257,10 +287,34 @@ const PRODUCTS = [
       { type: "image", src: "images/j5-side.jpg" },
       { type: "video", src: "images/j5-video.mp4" }
     ],
-    variantType: "ring", sizes: RING_SIZES, articleCount: RING_ARTICLE_COUNT },
+    variantType: "ring", sizes: RING_SIZES, articleCount: RING_ARTICLE_COUNT,
+    sizeArticleStock: {} },
+
+  /* NECKLACES — new category. Works exactly like the bracelets above:
+     article-only selector, and articleStock for any article number that
+     has more than one piece. */
+  { id: "n1", name: "Gold Chain Necklace", category: "necklace", price: 3800, desc: "18k gold-plated, adjustable length.", tag: null, featured: true,
+    image: "images/n1-main.jpg",
+    media: [
+      { type: "image", src: "images/n1-main.jpg" },
+      { type: "image", src: "images/n1-side.jpg" },
+      { type: "video", src: "images/n1-video.mp4" }
+    ],
+    variantType: "article", articleCount: BRACELET_ARTICLE_COUNT,
+    articleStock: {} },
+
+  { id: "n2", name: "Silver Pendant Necklace", category: "necklace", price: 3200, desc: "Sterling silver chain with pendant.", tag: null,
+    image: "images/n2-main.jpg",
+    media: [
+      { type: "image", src: "images/n2-main.jpg" },
+      { type: "image", src: "images/n2-side.jpg" },
+      { type: "video", src: "images/n2-video.mp4" }
+    ],
+    variantType: "article", articleCount: BRACELET_ARTICLE_COUNT,
+    articleStock: {} },
 ];
 
-const CATEGORY_LABEL = { ceramics: "Ceramics", crochet: "Crochet", thrift: "Thrifted", stickers: "Stickers", jewelry: "Jewelry" };
+const CATEGORY_LABEL = { ceramics: "Ceramics", crochet: "Crochet", thrift: "Thrifted", stickers: "Stickers", jewelry: "Jewelry", necklace: "Necklaces" };
 
 /* Flat delivery charge (PKR) added to every order. Change this one number
    whenever your delivery cost changes — nothing else needs editing. */
@@ -273,6 +327,7 @@ const CATEGORY_ICON = {
   thrift: `<svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M24 8a4 4 0 1 1 4 4l-4 4 18 12H6l18-12-4-4"/><line x1="6" y1="32" x2="42" y2="32"/></svg>`,
   stickers: `<svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"><path d="M10 10h20l8 8v20H10V10z"/><path d="M30 10v8h8"/><circle cx="19" cy="19" r="1.6" fill="currentColor" stroke="none"/></svg>`,
   jewelry: `<svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round" stroke-linecap="round"><path d="M14 10h20l6 9-16 19-16-19z"/><path d="M14 10l4 9-4-9zM34 10l-4 9 4-9zM8 19h32M18 19l6 19 6-19"/></svg>`,
+  necklace: `<svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M10 8c0 10 6 17 14 17s14-7 14-17"/><circle cx="24" cy="30" r="4.5"/></svg>`,
 };
 
 /* Categories where products are NOT one-of-a-kind — normal per-browser
@@ -280,7 +335,7 @@ const CATEGORY_ICON = {
    (ceramics, thrift, and anything new you add later) is treated as
    EXCLUSIVE below: once one visitor adds it to their cart, it locks for
    everyone else, everywhere, until they remove it or the order ships. */
-const NON_EXCLUSIVE_CATEGORIES = ["crochet", "stickers", "jewelry"];
+const NON_EXCLUSIVE_CATEGORIES = ["crochet", "stickers", "jewelry", "necklace"];
 
 /* Categories that always show a "Preorder" badge, regardless of the
    product's own "tag" field. */
@@ -347,13 +402,45 @@ function allVariantCombos(p) {
   return combos;
 }
 
-/* Is this exact combo still orderable? True if it's sitting in THIS
-   browser's own cart (we're already holding it), or if nobody else has
-   claimed it yet. */
+/* How many physical pieces exist for one exact combo — looks it up in
+   the product's articleStock (article-only) or sizeArticleStock (rings)
+   override table, defaulting to 1 (one-of-a-kind) if not listed. */
+function stockForCombo(p, combo) {
+  if (isRingVariant(p)) {
+    const map = p.sizeArticleStock || {};
+    const val = map[`${combo.size}__${combo.article}`];
+    return (val != null && val > 0) ? val : 1;
+  }
+  if (hasVariants(p)) {
+    const map = p.articleStock || {};
+    const val = map[combo.article];
+    return (val != null && val > 0) ? val : 1;
+  }
+  return 1;
+}
+
+/* One combo (e.g. "Article 3", or "Size 17 / Article 3") can represent
+   more than one physical piece. Internally, each piece gets its own
+   claim slot — "j1__3__u1", "j1__3__u2", etc. — so it can be claimed,
+   released, and sold independently of its siblings, using the exact
+   same one-of-a-kind claim system as ceramics/thrift (no backend
+   changes needed). This returns every unit slot for a combo. */
+function comboUnitKeys(p, combo) {
+  const base = variantKey(p, combo.size, combo.article);
+  const stock = stockForCombo(p, combo);
+  const keys = [];
+  for (let u = 1; u <= stock; u++) keys.push(`${base}__u${u}`);
+  return keys;
+}
+
+/* Is this exact combo still orderable? True if at least one of its unit
+   slots is sitting in THIS browser's own cart (we're already holding
+   it), or if at least one unit slot hasn't been claimed by anyone else
+   yet. */
 function isComboAvailable(p, combo) {
-  const key = variantKey(p, combo.size, combo.article);
-  if (cart[key]) return true;
-  return !claimedItems.has(key);
+  const units = comboUnitKeys(p, combo);
+  if (units.some(u => cart[u])) return true;
+  return units.some(u => !claimedItems.has(u));
 }
 
 function productHasAnyAvailableCombo(p) {
@@ -955,13 +1042,14 @@ async function addToCart(id, variant = null) {
 
   if (hasVariants(p)) {
     if (!variant || !variant.article || (isRingVariant(p) && !variant.size)) return false;
+    return addVariantToCart(p, variant);
   }
 
-  const key = hasVariants(p) ? variantKey(p, variant.size, variant.article) : id;
+  const key = id;
   const current = cart[key] || 0;
   if (current >= stockOf(key)) return false;
 
-  const needsClaim = hasVariants(p) || isExclusive(p);
+  const needsClaim = isExclusive(p);
   if (needsClaim && current === 0) {
     const ok = await claimItem(key);
     if (!ok) {
@@ -977,6 +1065,31 @@ async function addToCart(id, variant = null) {
   saveCart();
   renderCart();
   return true;
+}
+
+/* Claims one physical unit of a size+article (or article-only) combo.
+   Tries each of the combo's unit slots in turn — skipping any we
+   already hold or the server says is taken — so when a combo has more
+   than one piece in stock, different buyers each land on a different
+   piece instead of colliding on a single shared claim. The specific
+   unit key that wins (e.g. "j1__3__u2") is what actually lives in the
+   cart from here on, and is what gets released/finalized later. */
+async function addVariantToCart(p, variant) {
+  const units = comboUnitKeys(p, variant);
+  for (const unitKey of units) {
+    if (cart[unitKey]) continue;             // we already hold this exact piece
+    if (claimedItems.has(unitKey)) continue; // someone else already has it (per our last poll)
+    const ok = await claimItem(unitKey);
+    if (ok) {
+      cart[unitKey] = 1;
+      saveCart();
+      renderCart();
+      return true;
+    }
+    // Lost the race for this particular piece — mark it taken and try the next one.
+    claimedItems.set(unitKey, "reserved");
+  }
+  return false; // every piece of this combo is spoken for
 }
 
 function setQty(key, qty) {
