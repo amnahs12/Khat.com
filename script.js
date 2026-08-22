@@ -19,8 +19,8 @@
    for unlimited/made-to-order items. Once someone's cart hits the stock
    number, the "Add to cart" button disables and the + stepper stops going
    higher. Set stock to 0 to mark something sold out right away.
-   NOTE: stock is only used for ceramics / stickers / jewelry. Every other
-   category (crochet, thrift, and any new category you add) is treated as
+   NOTE: stock is only used for crochet / stickers / jewelry. Every other
+   category (ceramics, thrift, and any new category you add) is treated as
    one-of-a-kind automatically — see the "EXCLUSIVE ITEMS" note lower down.
 
    tag: optional short label shown on the card ("Vintage", "One of a kind"...).
@@ -230,10 +230,10 @@ const CATEGORY_ICON = {
 
 /* Categories where products are NOT one-of-a-kind — normal per-browser
    stock rules apply (see "stock" field above). Every other category
-   (crochet, thrift, and anything new you add later) is treated as
+   (ceramics, thrift, and anything new you add later) is treated as
    EXCLUSIVE below: once one visitor adds it to their cart, it locks for
    everyone else, everywhere, until they remove it or the order ships. */
-const NON_EXCLUSIVE_CATEGORIES = ["ceramics", "stickers", "jewelry"];
+const NON_EXCLUSIVE_CATEGORIES = ["crochet", "stickers", "jewelry"];
 
 /* Categories that always show a "Preorder" badge, regardless of the
    product's own "tag" field. */
@@ -646,6 +646,30 @@ async function fetchClaimedItems() {
 }
 
 /* ==========================================================================
+   SEQUENTIAL ORDER NUMBERS — talks to
+   netlify/functions/next-order-number.mjs, which keeps a single shared
+   counter in Netlify Blobs so orders come out 1001, 1002, 1003, ...
+   instead of random codes, and never collide even if two people check
+   out at the same moment.
+
+   If the function can't be reached for some reason (not deployed yet,
+   a network hiccup), we fall back to the old random ID so a checkout
+   can never get stuck — you'd just see one oddly-formatted order number
+   that day instead of a break in the sequence.
+   ========================================================================== */
+async function getNextOrderNumber() {
+  try {
+    const res = await fetch("/.netlify/functions/next-order-number", { method: "POST" });
+    if (!res.ok) return null;
+    const data = await res.json();
+    return (data && data.ok && data.orderNumber) ? data.orderNumber : null;
+  } catch (err) {
+    console.error("Could not get sequential order number, falling back:", err);
+    return null;
+  }
+}
+
+/* ==========================================================================
    CART — persisted to localStorage so it survives a page reload
    ========================================================================== */
 function loadCart() {
@@ -834,6 +858,10 @@ checkoutOverlay.addEventListener("click", (e) => { if (e.target === checkoutOver
 
 detailsForm.addEventListener("submit", async (e) => {
   e.preventDefault();
+
+  const submitBtn = detailsForm.querySelector('button[type="submit"]');
+  if (submitBtn) { submitBtn.disabled = true; submitBtn.textContent = "Placing order…"; }
+
   const data = new FormData(detailsForm);
 
   // Explicitly ensure JavaScript is passing the exact matching name to Netlify
@@ -841,7 +869,14 @@ detailsForm.addEventListener("submit", async (e) => {
 
   const name = data.get("name");
   const email = data.get("email");
-  const orderId = "PK-" + Math.random().toString(36).slice(2, 8).toUpperCase();
+
+  // Sequential order number (1001, 1002, ...) from the shared counter in
+  // Netlify Blobs. Falls back to the old random code only if that call
+  // fails, so a checkout is never blocked by it.
+  const orderNumber = await getNextOrderNumber();
+  const orderId = orderNumber != null
+    ? String(orderNumber)
+    : "PK-" + Math.random().toString(36).slice(2, 8).toUpperCase();
 
   // Build a readable order summary and stash it in the hidden "order-details"
   // field so it shows up inside the Netlify notification email.
@@ -892,6 +927,7 @@ detailsForm.addEventListener("submit", async (e) => {
   renderCart();
   renderProducts();
   detailsForm.reset();
+  if (submitBtn) { submitBtn.disabled = false; submitBtn.textContent = "Place order"; }
 });
 
 document.getElementById("confirmCloseBtn").addEventListener("click", closeCheckout);
