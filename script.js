@@ -65,7 +65,7 @@ const PRODUCTS = [
       { type: "image", src: "images/c4-2.jpg" },
       { type: "video", src: "images/c4.mp4" }
     ] },
-  { id: "c5", name: "Grey and White Lidded Jar", category: "ceramics", price: 450, desc: "Condition: 10/9 . Height:2.6 in approx , Diameter:3.13 inch approx", tag: null, image: "images/c10.jpg", stock: 1,
+  { id: "c5", name: "Grey and White Lidded Jar", category: "ceramics", price: 450, desc: "Condition: 10/9 , Minor chip inside lid . Height:2.6 in approx , Diameter:3.13 inch approx", tag: null, image: "images/c10.jpg", stock: 1,
     media: [
       { type: "image", src: "images/c10.jpg" },
       { type: "image", src: "images/c10-2.jpg" },
