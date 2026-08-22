@@ -44,40 +44,47 @@ const PRODUCTS = [
   { id: "c1", name: "Off White Ceramic Elevated Dish", category: "ceramics", price: 450, desc: "Condition: 10/10, 4.6 inch diameter bowl ,For Dressing tables and to be used as a trinket dish ", tag: "Must Have", featured: true, image: "images/c13.jpg", stock: 1,
     media: [
       { type: "image", src: "images/c13.jpg" },
-      { type: "image", src: "images/c13-2.jpg" },
+      { type: "image", src: "images2/c13-2.jpg" },
       { type: "video", src: "images/c13.mp4" }
     ] },
   { id: "c2", name: "Eggshell White Stackable Ceramic Servers (Tab Style)", category: "ceramics", price: 1200, desc: "Condition: 10/10 , Set of 4 stackable servers , Stacked:3.8 inch approx ,Single : 1 inch approx . Diameter 4.2 inch approx", tag: null, image: "images/c9.jpg", stock: 1,
     media: [
       { type: "image", src: "images/c9.jpg" },
-      { type: "image", src: "images/c9-2.jpg" },
+      { type: "image", src: "images2/c9-2.jpg" },
       { type: "video", src: "images/c9.mp4" }
     ] },
   { id: "c3", name: "Hexagonal Trinket Dish", category: "ceramics", price: 350, desc: "Condition: 10/10 , Diameter:4.13 in approx 0.12 in approx height", tag: "Must Have", image: "images/c3.jpg", stock: 1,
     media: [
       { type: "image", src: "images/c3.jpg" },
-      { type: "image", src: "images/c3-2.jpg" },
+      { type: "image", src: "images2/c3-2.jpg" },
       { type: "video", src: "images/c3.mp4" }
     ] },
   { id: "c4", name: "Vintage Churchill Ports of Call Soup Bowl", category: "ceramics", price: 400, desc: "Condition: 10/10 , Diameter: 6 in approx", tag: " Vinatge", image: "images/c4.jpg", stock: 1,
     media: [
       { type: "image", src: "images/c4.jpg" },
-      { type: "image", src: "images/c4-2.jpg" },
+      { type: "image", src: "images2/c4-2.jpg" },
       { type: "video", src: "images/c4.mp4" }
     ] },
   { id: "c5", name: "Grey and White Lidded Jar", category: "ceramics", price: 450, desc: "Condition: 10/9 , Minor chip inside lid . Height:2.6 in approx , Diameter:3.13 inch approx", tag: null, image: "images/c10.jpg", stock: 1,
     media: [
       { type: "image", src: "images/c10.jpg" },
-      { type: "image", src: "images/c10-2.jpg" },
+      { type: "image", src: "images2/c10-2.jpg" },
       { type: "video", src: "images/c10.mp4" }
     ] },
   { id: "c6", name: "Ivory Grvay Boat ", category: "ceramics", price: 450, desc: "Condition: 10/8  Made in Staffordshire UK , Swinnertons gravy boat, L:7.28 inch approx, H:2.56 inch approx , W:2.95inch approx", tag: "Vintage", image: "images/c11.jpg", stock: 1,
     media: [
       { type: "image", src: "images/c11.jpg" },
-      { type: "image", src: "images/c11-2.jpg" },
+      { type: "image", src: "images2/c11-2.jpg" },
       { type: "video", src: "images/c11.mp4" }
     ] },
 
+    { id: "c7", name: "Vintage Ceramic Money Box ", category: "ceramics", price: 450, desc: "Condition: 10/9 , Reusuable , slight damage to the opener at the bottom but still usable , D:3.14x1.14x2.13 inch approx", tag: "Vintage", image: "images/c6.jpg", stock: 1,
+    media: [
+      { type: "image", src: "images/c6.jpg" },
+      { type: "image", src: "images2/c6-2.jpg" },
+      { type: "video", src: "images/c11.mp4" }
+    ] },
+   
   { id: "r1", name: "Chunky Wool Beanie", category: "crochet", price: 2800, desc: "Merino blend, one size.", tag: null, featured: true, stock: 4,
     media: [
       { type: "image", src: "images/r1-1.jpg" },
@@ -106,49 +113,49 @@ const PRODUCTS = [
   { id: "t1", name: "Vinatge IKEA Candle Holder", category: "thrift", price: 300, desc: "Condition: 10/9 Ice Blue VTG Ikea.Diameter:2.95 in approx , Height:1.02 inch approx", tag: "Vintage", featured: true, image: "images/c2.jpg", stock: 1,
     media: [
       { type: "image", src: "images/c2.jpg" },
-      { type: "image", src: "images/c2-2.jpg" },
+      { type: "image", src: "images2/c2-2.jpg" },
       { type: "video", src: "images/c2.mp4" }
     ] },
   { id: "t2", name: "Jam Shed Vintage Mason Jar", category: "thrift", price: 300, desc: "Condition: 10/10 Dimesion:2.6 x 2.6 x 4.1 inch approx ", tag: null, image: "images/c5.jpg", stock: 1,
     media: [
       { type: "image", src: "images/c5.jpg" },
-      { type: "image", src: "images/c5-2.jpg" },
+      { type: "image", src: "images2/c5-2.jpg" },
       { type: "video", src: "images/c5.mp4" }
     ] },
   { id: "t3", name: "Airtight Preserving Jar with Lid", category: "thrift", price: 450, desc: "Condition: 10/10 , Airtight for Food, Width:2.13 , Height:6.10", tag: null, image: "images/c1.jpg", stock: 1,
     media: [
       { type: "image", src: "images/c1.jpg" },
-      { type: "image", src: "images/c1-2.jpg" },
+      { type: "image", src: "images2/c1-2.jpg" },
       { type: "video", src: "images/c1.mp4" }
     ] },
   { id: "t4", name: "Wood Embossed Cottage Jar ", category: "thrift", price: 450, desc: "Condition: 10/8 , Dimension: 7.4x3.14", tag: "One of a kind", image: "images/c7.jpg", stock: 1,
     media: [
       { type: "image", src: "images/c7.jpg" },
-      { type: "image", src: "images/c7-2.jpg" },
+      { type: "image", src: "images2/c7-2.jpg" },
       { type: "video", src: "images/c7.mp4" }
     ] },
   { id: "t5", name: "Watercolour Paintings By Noel", category: "thrift", price: 400, desc: "Condition: 10/8 ,", tag: "One of a kind", image: "images/c8.jpg", stock: 1,
     media: [
       { type: "image", src: "images/c8.jpg" },
-      { type: "image", src: "images/c8-2.jpg" },
+      { type: "image", src: "images2/c8-2.jpg" },
       { type: "video", src: "images/c8.mp4" }
     ] },
   { id: "t6", name: "1970s Clear Crystal Lidded Bowl", category: "thrift", price: 500, desc: "Condition: 10/9 , D:4.14 inch approx , H:1.8 ", tag: null, image: "images/c12.jpg", stock: 1,
     media: [
       { type: "image", src: "images/c12.jpg" },
-      { type: "image", src: "images/c12-2.jpg" },
+      { type: "image", src: "images2/c12-2.jpg" },
       { type: "video", src: "images/c12.mp4" }
     ] },
   { id: "t7", name: "101 Wipe Off Iq Challenges", category: "thrift", price: 500, desc: "Condition: 10/8(a little rough on the exterior of the box), Comes with Duster and mini Marker.", tag: "One of a kind", image: "images/c14.jpg", stock: 1,
     media: [
       { type: "image", src: "images/c14.jpg" },
-      { type: "image", src: "images/c14-2.jpg" },
+      { type: "image", src: "images2/c14-2.jpg" },
       { type: "video", src: "images/c14.mp4" }
     ] },
   { id: "t8", name: "Pocket-Sized Charades Game", category: "thrift", price: 400, desc: "Condition: 10/10 , about 50 cards in tin box", tag: "One of a kind", image: "images/c15.jpg", stock: 1,
     media: [
       { type: "image", src: "images/c15.jpg" },
-      { type: "image", src: "images/c15-2.jpg" },
+      { type: "image", src: "images2/c15-2.jpg" },
       { type: "video", src: "images/c15.mp4" }
     ] },
 
