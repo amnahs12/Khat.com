@@ -409,9 +409,11 @@ button { cursor: pointer; }
   box-shadow: var(--shadow-sm);
   display: flex;
   flex-direction: column;
+  cursor: pointer;
   transition: transform var(--dur) ease, box-shadow var(--dur) ease, border-color var(--dur) ease;
 }
 .card:hover { transform: translateY(-3px); box-shadow: var(--shadow-md); border-color: var(--oxblood-light); }
+.card:focus-visible { outline: 2px solid var(--oxblood-light); outline-offset: 2px; }
 
 .card-photo {
   position: relative;
@@ -451,6 +453,7 @@ button { cursor: pointer; }
   border-radius: var(--radius-sm);
   box-shadow: var(--shadow-sm);
 }
+.card-tag-preorder { background: var(--slate); }
 
 .card-body { padding: 14px 16px 16px; display: flex; flex-direction: column; gap: 4px; flex: 1; }
 .card-name { font-weight: 500; font-size: 0.98rem; color: var(--parchment-pale); }
@@ -613,6 +616,41 @@ button { cursor: pointer; }
   justify-content: center;
 }
 .confirm-body h2 { font-size: 1.4rem; }
+
+/* ==========================================================================
+   Product detail modal
+   ========================================================================== */
+.product-modal { width: min(560px, 94vw); }
+.product-modal-body { padding: 0; }
+
+.product-slideshow {
+  position: relative;
+  aspect-ratio: 1 / 1;
+  background: var(--navy);
+  border-bottom: 1px solid var(--line);
+  overflow: hidden;
+}
+.product-slide-track { position: relative; width: 100%; height: 100%; }
+.p-slide {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity var(--dur) ease;
+}
+.p-slide.is-active { opacity: 1; pointer-events: auto; }
+.p-slide img, .p-slide video { width: 100%; height: 100%; object-fit: cover; }
+.p-slide-icon { width: 45%; height: 45%; color: var(--parchment); }
+.p-slide-icon svg { width: 100%; height: 100%; }
+
+.product-info { padding: 18px 22px 24px; }
+.product-info-badges { display: flex; align-items: center; gap: 8px; margin-bottom: 12px; }
+.product-tag-inline { position: static; box-shadow: none; }
+.product-desc { font-size: 0.88rem; color: var(--parchment-deep); margin: 0 0 14px; line-height: 1.5; }
+.product-price { font-size: 1.3rem; font-weight: 700; color: var(--parchment-pale); margin: 0 0 16px; }
 
 /* ==========================================================================
    Responsive
