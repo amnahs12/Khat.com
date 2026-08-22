@@ -1,0 +1,9 @@
+# If you already have a netlify.toml in your repo, don't replace it —
+# just make sure it includes the [functions] section below (and keep the
+# rest of your existing config as-is).
+
+[build]
+  publish = "."
+
+[functions]
+  directory = "netlify/functions"

@@ -1,0 +1,9 @@
+{
+  "name": "khatt-shop",
+  "private": true,
+  "version": "1.0.0",
+  "description": "khatt storefront static site + Netlify Functions for one-of-a-kind item locking",
+  "dependencies": {
+    "@netlify/blobs": "^10.7.8"
+  }
+}
