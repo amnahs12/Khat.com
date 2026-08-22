@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>khatt — admin</title>
+<style>
+  body { font-family: system-ui, sans-serif; max-width: 560px; margin: 40px auto; padding: 0 20px; color: #222; }
+  h1 { font-size: 1.3rem; }
+  p.hint { color: #666; font-size: 0.9rem; }
+  label { display: block; margin: 16px 0 6px; font-weight: 600; }
+  input[type="password"], input[type="text"] { width: 100%; padding: 8px; box-sizing: border-box; font-size: 1rem; }
+  button { margin-top: 12px; padding: 8px 16px; cursor: pointer; }
+  #list { margin-top: 24px; }
+  .row { display: flex; justify-content: space-between; align-items: center; padding: 10px 0; border-bottom: 1px solid #eee; }
+  .row .id { font-family: monospace; font-weight: 600; }
+  .row .status { color: #888; font-size: 0.85rem; margin-left: 8px; }
+  .msg { margin-top: 12px; font-size: 0.9rem; }
+  .msg.ok { color: #1a7f37; }
+  .msg.err { color: #c62828; }
+</style>
+</head>
+<body>
+
+<h1>khatt — restore an item</h1>
+<p class="hint">
+  Use this when a thrift or ceramics item shows "Sold" but the sale fell
+  through (order cancelled, buyer never paid, etc.) and you want it
+  orderable again — exactly like it was before. This only affects
+  one-of-a-kind items (thrift &amp; ceramics); crochet / stickers / jewelry
+  stock is edited directly in <code>script.js</code> instead.
+</p>
+
+<label for="secret">Admin password</label>
+<input type="password" id="secret" placeholder="Paste your ADMIN_SECRET">
+
+<div id="list">Loading current claims…</div>
+
+<label for="manualId" style="margin-top:28px;">Or restore by ID directly</label>
+<input type="text" id="manualId" placeholder="e.g. t4">
+<button id="manualBtn">Restore this ID</button>
+
+<p class="msg" id="msg"></p>
+
+<script>
+const listEl = document.getElementById("list");
+const msgEl = document.getElementById("msg");
+const secretEl = document.getElementById("secret");
+
+function showMsg(text, ok) {
+  msgEl.textContent = text;
+  msgEl.className = "msg " + (ok ? "ok" : "err");
+}
+
+async function loadClaims() {
+  try {
+    const res = await fetch("/.netlify/functions/claimed-items");
+    const data = await res.json();
+    const claimed = data.claimed || [];
+    if (!claimed.length) {
+      listEl.textContent = "Nothing is currently reserved or sold.";
+      return;
+    }
+    listEl.innerHTML = claimed.map(c => `
+      <div class="row">
+        <span><span class="id">${c.id}</span><span class="status">${c.status}</span></span>
+        <button data-restore="${c.id}" ${c.status !== "sold" ? "disabled title=\\"only sold items need restoring — reservations expire on their own\\"" : ""}>Restore</button>
+      </div>
+    `).join("");
+    listEl.querySelectorAll("[data-restore]").forEach(btn => {
+      btn.addEventListener("click", () => restore(btn.dataset.restore));
+    });
+  } catch (err) {
+    listEl.textContent = "Could not load current claims.";
+  }
+}
+
+async function restore(id) {
+  const secret = secretEl.value.trim();
+  if (!secret) { showMsg("Enter the admin password first.", false); return; }
+  try {
+    const res = await fetch("/.netlify/functions/restore-item", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ id, secret }),
+    });
+    const data = await res.json();
+    if (data.ok) {
+      showMsg(`"${id}" is available again.`, true);
+      loadClaims();
+    } else {
+      showMsg(`Failed: ${data.reason || "unknown error"}`, false);
+    }
+  } catch (err) {
+    showMsg("Network error — try again.", false);
+  }
+}
+
+document.getElementById("manualBtn").addEventListener("click", () => {
+  const id = document.getElementById("manualId").value.trim();
+  if (!id) { showMsg("Type an item ID first.", false); return; }
+  restore(id);
+});
+
+loadClaims();
+</script>
+
+</body>
+</html>
