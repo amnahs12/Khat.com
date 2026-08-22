@@ -51,6 +51,7 @@ const PRODUCTS = [
     media: [
       { type: "image", src: "images/c9.jpg" },
       { type: "image", src: "images2/c9-2.jpg" },
+       { type: "image", src: "images2/c9-3.jpg" },
       { type: "video", src: "images/c9.mp4" }
     ] },
   { id: "c3", name: "Hexagonal Trinket Dish", category: "ceramics", price: 350, desc: "Condition: 10/10 , Diameter:4.13 in approx 0.12 in approx height", tag: "Must Have", image: "images/c3.jpg", stock: 1,
@@ -150,6 +151,7 @@ const PRODUCTS = [
     media: [
       { type: "image", src: "images/c14.jpg" },
       { type: "image", src: "images2/c14-2.jpg" },
+       { type: "image", src: "images2/c14-3.jpg" },
       { type: "video", src: "images/c14.mp4" }
     ] },
   { id: "t8", name: "Pocket-Sized Charades Game", category: "thrift", price: 400, desc: "Condition: 10/10 , about 50 cards in tin box", tag: "One of a kind", image: "images/c15.jpg", stock: 1,
