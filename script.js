@@ -97,6 +97,15 @@ const PREORDER_CATEGORIES = ["crochet", "stickers"];
 function isExclusive(p) { return !NON_EXCLUSIVE_CATEGORIES.includes(p.category); }
 function isPreorder(p) { return PREORDER_CATEGORIES.includes(p.category); }
 
+/* Label to show on an unavailable exclusive item: "Sold" once someone's
+   order for it has actually gone through, "Reserved" while it's just
+   sitting in someone else's cart mid-checkout. Non-exclusive items that
+   are out of stock always just say "Sold out". */
+function exclusiveStatusLabel(p) {
+  if (!isExclusive(p)) return "Sold out";
+  return claimedItems.get(p.id) === "sold" ? "Sold" : "Reserved";
+}
+
 /* ==========================================================================
    STATE
    ========================================================================== */
@@ -104,10 +113,13 @@ let currentFilter = "all";
 let currentSort = "featured";
 let cart = loadCart(); // { [productId]: quantity }
 
-/* IDs currently claimed (locked) by ANY visitor, for exclusive-category
-   items. Loaded from /.netlify/functions/claimed-items and refreshed
-   periodically so everyone's view stays roughly in sync. */
-let claimedItems = new Set();
+/* IDs currently claimed by ANY visitor, for exclusive-category items —
+   a Map of id -> "reserved" | "sold". "reserved" means it's sitting in
+   someone's cart mid-checkout (temporary, expires if abandoned); "sold"
+   means an order for it was actually completed (permanent). Loaded from
+   /.netlify/functions/claimed-items and refreshed periodically so
+   everyone's view stays roughly in sync. */
+let claimedItems = new Map();
 
 /* ==========================================================================
    ELEMENTS
@@ -207,7 +219,7 @@ function productCardHTML(p) {
 
   let badgeTag = "";
   if (soldOut) {
-    badgeTag = `<span class="card-tag">${isExclusive(p) ? "Sold" : "Sold out"}</span>`;
+    badgeTag = `<span class="card-tag">${exclusiveStatusLabel(p)}</span>`;
   } else if (preorder) {
     badgeTag = `<span class="card-tag card-tag-preorder">Preorder</span>`;
   } else if (p.tag) {
@@ -226,7 +238,7 @@ function productCardHTML(p) {
         <p class="card-desc">${p.desc}</p>
         <div class="card-foot">
           <span class="card-price mono">Rs ${p.price.toLocaleString()}</span>
-          <button class="add-btn" data-add="${p.id}" ${soldOut || maxedOut ? "disabled" : ""}>${soldOut ? (isExclusive(p) ? "Sold" : "Sold out") : (maxedOut ? "In cart" : "Add to cart")}</button>
+          <button class="add-btn" data-add="${p.id}" ${soldOut || maxedOut ? "disabled" : ""}>${soldOut ? exclusiveStatusLabel(p) : (maxedOut ? "In cart" : "Add to cart")}</button>
         </div>
       </div>
     </article>
@@ -354,7 +366,7 @@ function renderProductModal() {
 
   const tagEl = document.getElementById("productTag");
   let tagText = "";
-  if (soldOut) tagText = isExclusive(p) ? "Sold" : "Sold out";
+  if (soldOut) tagText = exclusiveStatusLabel(p);
   else if (preorder) tagText = "Preorder";
   else if (p.tag) tagText = p.tag;
   if (tagText) { tagEl.textContent = tagText; tagEl.hidden = false; } else { tagEl.hidden = true; }
@@ -364,7 +376,7 @@ function renderProductModal() {
 
   const addBtn = document.getElementById("productAddBtn");
   addBtn.disabled = soldOut || maxedOut;
-  addBtn.textContent = soldOut ? (isExclusive(p) ? "Sold" : "Sold out") : (maxedOut ? "In cart" : "Add to cart");
+  addBtn.textContent = soldOut ? exclusiveStatusLabel(p) : (maxedOut ? "In cart" : "Add to cart");
   addBtn.onclick = async () => {
     addBtn.disabled = true;
     addBtn.textContent = "Adding…";
@@ -418,12 +430,21 @@ document.addEventListener("keydown", (e) => {
 });
 
 /* ==========================================================================
-   EXCLUSIVE-ITEM CLAIMS — talks to Netlify Functions so that once ANY
-   visitor adds a one-of-a-kind item (crochet, thrift, ...) to their cart,
-   it locks for everyone else in real time. Requires the three functions
-   in netlify/functions/ to be deployed (see the notes at the end of this
-   file) — if they're missing, claims will silently fail open and the
-   site falls back to the old "local browser only" behaviour.
+   EXCLUSIVE-ITEM CLAIMS — talks to Netlify Functions so a one-of-a-kind
+   item (crochet, thrift, ...) locks for everyone else the moment someone
+   adds it to their cart, WITHOUT going permanently out of stock until
+   their order actually completes:
+
+     add to cart        → temporary "reserved" claim (expires automatically
+                           if the order is never finished — see
+                           netlify/functions/cleanup-expired-claims.mjs,
+                           which runs on a schedule and sweeps these up)
+     checkout completes  → claim is upgraded to permanent "sold"
+     removed from cart   → reservation is released immediately
+
+   Requires the functions in netlify/functions/ to be deployed — if
+   they're missing, calls fail open and the site falls back to the old
+   "local browser only" behaviour.
    ========================================================================== */
 async function claimItem(id) {
   try {
@@ -449,12 +470,28 @@ function releaseItem(id) {
   }).catch(err => console.error("Release request failed:", err));
 }
 
+/* Called only once a checkout actually completes — turns each exclusive
+   item's temporary reservation into a permanent "sold" claim. */
+async function finalizeExclusiveOrder(ids) {
+  if (!ids.length) return;
+  try {
+    await fetch("/.netlify/functions/finalize-order", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ ids }),
+    });
+  } catch (err) {
+    console.error("Could not finalize sold items:", err);
+  }
+  ids.forEach(id => claimedItems.set(id, "sold"));
+}
+
 async function fetchClaimedItems() {
   try {
     const res = await fetch("/.netlify/functions/claimed-items");
     if (!res.ok) return;
     const data = await res.json();
-    claimedItems = new Set(data.claimed || []);
+    claimedItems = new Map((data.claimed || []).map(c => [c.id, c.status]));
     renderProducts();
     renderCart();
     if (currentProductId) renderProductModal();
@@ -500,7 +537,10 @@ async function addToCart(id) {
   if (isExclusive(p) && current === 0) {
     const ok = await claimItem(id);
     if (!ok) {
-      claimedItems.add(id); // someone else has it — reflect that immediately
+      // Someone else has it — reflect that immediately. We don't know
+      // whether it's "sold" or just "reserved" until the next poll, so
+      // assume the more likely case (still reserved) for now.
+      if (!claimedItems.has(id)) claimedItems.set(id, "reserved");
       return false;
     }
   }
@@ -647,7 +687,7 @@ checkoutBtn.addEventListener("click", openCheckout);
 document.getElementById("checkoutCloseBtn").addEventListener("click", closeCheckout);
 checkoutOverlay.addEventListener("click", (e) => { if (e.target === checkoutOverlay) closeCheckout(); });
 
-detailsForm.addEventListener("submit", (e) => {
+detailsForm.addEventListener("submit", async (e) => {
   e.preventDefault();
   const data = new FormData(detailsForm);
 
@@ -686,6 +726,15 @@ detailsForm.addEventListener("submit", (e) => {
     console.error("Network error during submission:", error);
   });
 
+  // The order is now actually going through — THIS is the moment any
+  // one-of-a-kind items in it flip from a temporary "reserved" hold to
+  // permanently "sold" and gone from stock for good.
+  const exclusiveIds = cartLines()
+    .map(line => line.product)
+    .filter(isExclusive)
+    .map(p => p.id);
+  await finalizeExclusiveOrder(exclusiveIds);
+
   document.getElementById("confirmName").textContent = name.split(" ")[0] || "friend";
   document.getElementById("confirmOrderId").textContent = orderId;
   document.getElementById("confirmEmail").textContent = email;
@@ -693,8 +742,6 @@ detailsForm.addEventListener("submit", (e) => {
   checkoutFormView.hidden = true;
   checkoutConfirmView.hidden = false;
 
-  // Exclusive items that were just bought STAY claimed (they're sold) —
-  // we simply clear the local cart. Everything else resets normally.
   cart = {};
   saveCart();
   renderCart();
