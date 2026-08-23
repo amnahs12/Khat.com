@@ -363,11 +363,7 @@ v
   border-right: 1px solid rgba(239,237,228,0.4);
 }
 
-@media (max-width: 700px) {
-  .hero-inner { flex-direction: column; align-items: flex-start; gap: 20px; }
-  .hero-banner { margin-bottom: 0; }
-  
-
+@media (max-width: 520px) {
   .hero-ribbon { padding: 5px 14px; gap: 8px; }
   .hero-ribbon span { font-size: 0.56rem; }
    
