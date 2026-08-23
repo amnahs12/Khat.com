@@ -262,17 +262,15 @@ const PRODUCTS = [
     variantType: "article", articleCount: BRACELET_ARTICLE_COUNT,
     articleStock: {} },
 
-  { id: "j3", name: "Hand Cuff Bracelet", category: "jewelry", price: 3200, desc: "Open-cuff style, one-size-fits-most.", tag: null,
+  { id: "j3", name: "Hand Cuff Bracelet", category: "jewelry", price: 300, desc: "Open-cuff style, one-size-fits-most.", tag: null,
     image: "images/j3-main.jpg",
     media: [
-      { type: "image", src: "images/j3-main.jpg" },
-      { type: "image", src: "images/j3-side.jpg" },
-      { type: "video", src: "images/j3-video.mp4" }
+      { type: "image", src: "imageshc/hc3-main.webp" }
     ],
     variantType: "article", articleCount: BRACELET_ARTICLE_COUNT,
-    articleStock: {} },
+    articleStock: {6} },
 
-  { id: "j4", name: "Gold Ring", category: "jewelry", price: 4200, desc: "18k gold-plated band.", tag: null, featured: true,
+  { id: "j4", name: "Gold Ring", category: "jewelry", price: 125, desc: "Shein rings.Please Check the size and article number before ordering", tag: null, featured: true,
     image: "images/j4-main.jpg",
     media: [
       { type: "image", src: "imagesjrg/j4(1).webp" },
@@ -281,33 +279,31 @@ const PRODUCTS = [
     // No size selector — article number only, same as the bracelets.
     // 25 articles total. Change any single number below to set that
     // article's exact stock; every entry defaults to 1 (one-of-a-kind).
-    variantType: "article", articleCount: 25,
+    variantType: "article", articleCount: 23,
     articleStock: {
       "1": 1,
-      "2": 1,
-      "3": 2,
+      "2": 2,
+      "3": 1,
       "4": 1,
       "5": 1,
-      "6": 1,
-      "7": 1,
-      "8": 9,
+      "6": 2,
+      "7": 2,
+      "8": 1,
       "9": 1,
       "10": 1,
       "11": 1,
-      "12": 1,
+      "12": 2,
       "13": 1,
       "14": 1,
       "15": 1,
-      "16": 1,
+      "16": 2,
       "17": 1,
       "18": 1,
       "19": 1,
       "20": 1,
       "21": 1,
       "22": 1,
-      "23": 1,
-      "24": 1,
-      "25": 1
+      "23": 1
     } },
 
   { id: "j5", name: "Silver Ring", category: "jewelry", price: 3000, desc: "Sterling silver band.", tag: null,
