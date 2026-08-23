@@ -175,6 +175,15 @@ button { cursor: pointer; }
   padding-top: 14px;
   padding-bottom: 14px;
 }
+.hero-banner {
+  margin-bottom: 0;
+  flex-shrink: 0;
+}
+
+.hero-caption {
+  flex: 1;
+  min-width: 0;
+}
 .logo {
   display: inline-flex;
   align-items: baseline;
