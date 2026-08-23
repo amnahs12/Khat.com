@@ -629,77 +629,117 @@ document.getElementById("sortSelect").addEventListener("change", (e) => {
 });
 
 /* ==========================================================================
-   HERO SLIDESHOW — small, minimalist product slideshow. Cycles through
-   featured products, using .slide-photo / .slide-photo-fallback /
-   .slide-caption — the classes style.css actually styles for the compact
-   hero banner. Each slide is clickable (and keyboard-activatable) and
-   opens that product's detail modal, same as clicking a card below.
+   HERO SLIDESHOW — small square-thumbnail product carousel. Several
+   fixed-size 1:1 cards (same visual treatment as the main product grid
+   cards — object-fit: cover, never stretched) sit side by side inside a
+   fixed frame, scroll-snapped, and paged with the prev/next arrows or the
+   dots below (one dot per page of cards, not per individual card).
+   Clicking a card opens that product's detail modal, same as the grid.
    ========================================================================== */
 const slideshowTrack = document.getElementById("slideshowTrack");
 const slideDots = document.getElementById("slideDots");
-let slideIndex = 0;
+let slidePage = 0;
+let slidePageCount = 1;
+let slidePerView = 1;
 let slideTimer = null;
 
 function getFeatured() {
   const featured = PRODUCTS.filter(p => p.featured);
-  return featured.length ? featured : PRODUCTS.slice(0, 4);
+  return featured.length ? featured : PRODUCTS.slice(0, 8);
 }
 
 function renderSlideshow() {
-  const featured = getFeatured();
+  const items = getFeatured();
 
-  slideshowTrack.innerHTML = featured.map((p, i) => `
-    <div class="slide${i === 0 ? " is-active" : ""}" data-slide="${i}" data-product-id="${p.id}" role="button" tabindex="0" aria-label="View ${p.name}">
-      ${p.image
-        ? `<img class="slide-photo" src="${p.image}" alt="${p.name}" loading="lazy">`
-        : `<div class="slide-photo-fallback">${CATEGORY_ICON[p.category]}</div>`}
-      <div class="slide-caption">
-        <p class="slide-eyebrow">${CATEGORY_LABEL[p.category]}</p>
-        <h3 class="slide-name">${p.name}</h3>
-        <p class="slide-price mono">Rs ${p.price.toLocaleString()}</p>
+  slideshowTrack.innerHTML = items.map(p => `
+    <button class="slide-card" type="button" data-product-id="${p.id}" aria-label="View ${p.name}">
+      <div class="slide-card-photo">
+        ${p.image ? `<img src="${p.image}" alt="${p.name}" loading="lazy">` : CATEGORY_ICON[p.category]}
       </div>
-    </div>
+      <p class="slide-card-name">${p.name}</p>
+      <p class="slide-card-price mono">Rs ${p.price.toLocaleString()}</p>
+    </button>
   `).join("");
 
-  slideDots.innerHTML = featured.map((_, i) => `
-    <button class="slide-dot${i === 0 ? " is-active" : ""}" data-dot="${i}" aria-label="Go to slide ${i + 1}"></button>
-  `).join("");
-
-  slideDots.querySelectorAll("[data-dot]").forEach(dot => {
-    dot.addEventListener("click", () => goToSlide(Number(dot.dataset.dot)));
+  slideshowTrack.querySelectorAll(".slide-card").forEach(card => {
+    card.addEventListener("click", () => openProduct(card.dataset.productId));
   });
 
-  // Clicking (or Enter/Space on) a slide opens that product's detail modal
-  slideshowTrack.querySelectorAll(".slide").forEach(slide => {
-    slide.addEventListener("click", () => openProduct(slide.dataset.productId));
-    slide.addEventListener("keydown", (e) => {
-      if (e.key === "Enter" || e.key === " ") {
-        e.preventDefault();
-        openProduct(slide.dataset.productId);
-      }
-    });
-  });
+  slideshowTrack.addEventListener("scroll", onSlideshowScroll, { passive: true });
+  window.addEventListener("resize", recalcSlidePaging);
 
-  slideIndex = 0;
+  slidePage = 0;
+  recalcSlidePaging();
   startSlideTimer();
 }
 
-function goToSlide(i) {
-  const slides = slideshowTrack.querySelectorAll(".slide");
-  const dots = slideDots.querySelectorAll(".slide-dot");
-  if (!slides.length) return;
-  slideIndex = (i + slides.length) % slides.length;
-  slides.forEach((s, idx) => s.classList.toggle("is-active", idx === slideIndex));
-  dots.forEach((d, idx) => d.classList.toggle("is-active", idx === slideIndex));
+/* Works out how many small cards fit in the visible frame at once, and
+   how many "pages" that makes — recalculated on load and on resize so it
+   stays correct at any screen width. */
+function recalcSlidePaging() {
+  const cards = slideshowTrack.querySelectorAll(".slide-card");
+  if (!cards.length) { slidePageCount = 1; renderSlideDots(); return; }
+
+  const gap = parseFloat(getComputedStyle(slideshowTrack).columnGap || "14") || 14;
+  const cardWidth = cards[0].getBoundingClientRect().width;
+  const step = cardWidth + gap;
+  const viewportWidth = slideshowTrack.clientWidth;
+
+  slidePerView = Math.max(1, Math.floor((viewportWidth + gap) / step));
+  slidePageCount = Math.max(1, Math.ceil(cards.length / slidePerView));
+  slidePage = Math.min(slidePage, slidePageCount - 1);
+  renderSlideDots();
+}
+
+function renderSlideDots() {
+  slideDots.innerHTML = Array.from({ length: slidePageCount }).map((_, i) => `
+    <button class="slide-dot${i === slidePage ? " is-active" : ""}" data-dot="${i}" aria-label="Go to slide ${i + 1}"></button>
+  `).join("");
+  slideDots.querySelectorAll("[data-dot]").forEach(dot => {
+    dot.addEventListener("click", () => { goToSlide(Number(dot.dataset.dot)); startSlideTimer(); });
+  });
+}
+
+function pageScrollLeft(page) {
+  const cards = slideshowTrack.querySelectorAll(".slide-card");
+  if (!cards.length) return 0;
+  const idx = Math.min(page * slidePerView, cards.length - 1);
+  return cards[idx].offsetLeft;
+}
+
+function goToSlide(page) {
+  slidePage = (page + slidePageCount) % slidePageCount;
+  slideshowTrack.scrollTo({ left: pageScrollLeft(slidePage), behavior: "smooth" });
+  renderSlideDots();
+}
+
+/* Keeps the dots in sync if someone drags/swipes the carousel by hand
+   instead of using the arrows. */
+let scrollSettleTimer = null;
+function onSlideshowScroll() {
+  clearTimeout(scrollSettleTimer);
+  scrollSettleTimer = setTimeout(() => {
+    const cards = slideshowTrack.querySelectorAll(".slide-card");
+    if (!cards.length) return;
+    const scrollLeft = slideshowTrack.scrollLeft;
+    let nearestIdx = 0;
+    let nearestDist = Infinity;
+    cards.forEach((c, i) => {
+      const dist = Math.abs(c.offsetLeft - scrollLeft);
+      if (dist < nearestDist) { nearestDist = dist; nearestIdx = i; }
+    });
+    slidePage = Math.min(Math.floor(nearestIdx / slidePerView), slidePageCount - 1);
+    renderSlideDots();
+  }, 120);
 }
 
 function startSlideTimer() {
   clearInterval(slideTimer);
-  slideTimer = setInterval(() => goToSlide(slideIndex + 1), 4500);
+  slideTimer = setInterval(() => goToSlide(slidePage + 1), 4500);
 }
 
-document.getElementById("slidePrev").addEventListener("click", () => { goToSlide(slideIndex - 1); startSlideTimer(); });
-document.getElementById("slideNext").addEventListener("click", () => { goToSlide(slideIndex + 1); startSlideTimer(); });
+document.getElementById("slidePrev").addEventListener("click", () => { goToSlide(slidePage - 1); startSlideTimer(); });
+document.getElementById("slideNext").addEventListener("click", () => { goToSlide(slidePage + 1); startSlideTimer(); });
 
 const slideshowEl = document.getElementById("slideshow");
 slideshowEl.addEventListener("mouseenter", () => clearInterval(slideTimer));
