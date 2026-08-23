@@ -263,8 +263,10 @@ const PRODUCTS = [
     articleStock: {} },
 
   { id: "j3", name: "Hand Cuff Bracelet", category: "jewelry", price: 300, desc: "Open-cuff style, one-size-fits-most.", tag: null,
-     image: "imageshc/hc3-main.webp"
     
+    media: [
+      { type: "image", src: "imageshc/hc3-main.webp" }
+    ],
     variantType: "article", articleCount: BRACELET_ARTICLE_COUNT,
     articleStock: {"1": 1,
       "2": 3,
@@ -670,18 +672,22 @@ document.getElementById("sortSelect").addEventListener("change", (e) => {
 });
 
 /* ==========================================================================
-   HERO SLIDESHOW — small square-thumbnail product carousel. Several
-   fixed-size 1:1 cards (same visual treatment as the main product grid
-   cards — object-fit: cover, never stretched) sit side by side inside a
-   fixed frame, scroll-snapped, and paged with the prev/next arrows or the
-   dots below (one dot per page of cards, not per individual card).
-   Clicking a card opens that product's detail modal, same as the grid.
+   HERO SLIDESHOW — small square-thumbnail product carousel. Exactly 3
+   cards are visible at a time, on any screen size — the JS below
+   calculates the pixel width so 3 cards + 2 gaps fill the frame exactly,
+   and sets that width directly on each card (inline style beats any CSS
+   rule, so a stale/mismatched stylesheet can never make more or fewer
+   than 3 appear). Recalculated on load and on resize. Cards are
+   scroll-snapped, and paged with the prev/next arrows or the dots below
+   (one dot per page of 3, not per individual card). Clicking a card
+   opens that product's detail modal, same as the grid.
    ========================================================================== */
 const slideshowTrack = document.getElementById("slideshowTrack");
 const slideDots = document.getElementById("slideDots");
 let slidePage = 0;
 let slidePageCount = 1;
-let slidePerView = 1;
+const SLIDES_PER_VIEW = 3; // fixed: always show exactly 3 cards per page
+let slidePerView = SLIDES_PER_VIEW;
 let slideTimer = null;
 
 function getFeatured() {
@@ -707,25 +713,49 @@ function renderSlideshow() {
   });
 
   slideshowTrack.addEventListener("scroll", onSlideshowScroll, { passive: true });
-  window.addEventListener("resize", recalcSlidePaging);
+
+  let resizeSettleTimer = null;
+  window.addEventListener("resize", () => {
+    clearTimeout(resizeSettleTimer);
+    resizeSettleTimer = setTimeout(recalcSlidePaging, 80);
+  });
 
   slidePage = 0;
   recalcSlidePaging();
   startSlideTimer();
 }
 
-/* Works out how many small cards fit in the visible frame at once, and
-   how many "pages" that makes — recalculated on load and on resize so it
-   stays correct at any screen width. */
+/* Sizes every card so that exactly SLIDES_PER_VIEW (3) fit the visible
+   frame width, on any screen — then works out how many "pages" that
+   makes. Setting an inline pixel width on each card (rather than relying
+   on a CSS class) guarantees the count stays exactly 3 regardless of
+   viewport size or any stylesheet changes elsewhere. Re-run on load and
+   on resize (debounced), and re-snaps the scroll position to the current
+   page afterwards so the layout doesn't jump. */
 function recalcSlidePaging() {
   const cards = slideshowTrack.querySelectorAll(".slide-card");
   if (!cards.length) { slidePageCount = 1; renderSlideDots(); return; }
 
-  slidePerView = 3; // always exactly 3 cards per page, on any screen
+  slidePerView = SLIDES_PER_VIEW;
+
+  const trackStyles = getComputedStyle(slideshowTrack);
+  const gap = parseFloat(trackStyles.columnGap || trackStyles.gap || "14") || 14;
+  const containerWidth = slideshowTrack.clientWidth;
+  const cardWidth = Math.max(60, (containerWidth - gap * (slidePerView - 1)) / slidePerView);
+
+  cards.forEach(c => {
+    c.style.width = `${cardWidth}px`;
+    c.style.flex = `0 0 ${cardWidth}px`;
+  });
+
   slidePageCount = Math.max(1, Math.ceil(cards.length / slidePerView));
   slidePage = Math.min(slidePage, slidePageCount - 1);
   renderSlideDots();
+
+  // Keep the current page aligned after a resize changed each card's width.
+  slideshowTrack.scrollLeft = pageScrollLeft(slidePage);
 }
+
 function renderSlideDots() {
   slideDots.innerHTML = Array.from({ length: slidePageCount }).map((_, i) => `
     <button class="slide-dot${i === slidePage ? " is-active" : ""}" data-dot="${i}" aria-label="Go to slide ${i + 1}"></button>
