@@ -273,7 +273,7 @@ const PRODUCTS = [
       "3": 1,
       "4": 1,
       "5": 3,
-      "6": 1 },
+      "6": 1 }},
 
   { id: "j4", name: "Gold Ring", category: "jewelry", price: 125, desc: "Shein rings.Please Check the size and article number before ordering", tag: null, featured: true,
     image: "images/j4-main.jpg",
@@ -723,17 +723,11 @@ function recalcSlidePaging() {
   const cards = slideshowTrack.querySelectorAll(".slide-card");
   if (!cards.length) { slidePageCount = 1; renderSlideDots(); return; }
 
-  const gap = parseFloat(getComputedStyle(slideshowTrack).columnGap || "14") || 14;
-  const cardWidth = cards[0].getBoundingClientRect().width;
-  const step = cardWidth + gap;
-  const viewportWidth = slideshowTrack.clientWidth;
-
-  slidePerView = Math.max(1, Math.floor((viewportWidth + gap) / step));
+  slidePerView = 3; // always exactly 3 cards per page, on any screen
   slidePageCount = Math.max(1, Math.ceil(cards.length / slidePerView));
   slidePage = Math.min(slidePage, slidePageCount - 1);
   renderSlideDots();
 }
-
 function renderSlideDots() {
   slideDots.innerHTML = Array.from({ length: slidePageCount }).map((_, i) => `
     <button class="slide-dot${i === slidePage ? " is-active" : ""}" data-dot="${i}" aria-label="Go to slide ${i + 1}"></button>
