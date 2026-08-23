@@ -268,7 +268,12 @@ const PRODUCTS = [
       { type: "image", src: "imageshc/hc3-main.webp" }
     ],
     variantType: "article", articleCount: BRACELET_ARTICLE_COUNT,
-    articleStock: {6} },
+    articleStock: {"1": 1,
+      "2": 3,
+      "3": 1,
+      "4": 1,
+      "5": 3,
+      "6": 1 },
 
   { id: "j4", name: "Gold Ring", category: "jewelry", price: 125, desc: "Shein rings.Please Check the size and article number before ordering", tag: null, featured: true,
     image: "images/j4-main.jpg",
