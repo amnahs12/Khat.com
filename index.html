@@ -1,730 +1,330 @@
-/* ==========================================================================
-   khatt — design tokens
-   Palette — "Blue Prince" moodboard, dark-academia treatment:
-     Deep Ink      #10161D  — page background
-     Black Pearl   #1E262F  — card / surface background, logo ink
-     Blue Prince   #5E7C99  — primary accent (CTA, price, active states)
-     Stratosphere  #415365  — secondary accent (borders, inactive UI)
-     Soft Secret   #D6D4C9  — primary light text on dark surfaces,
-                               also the light band behind the header/footer
-     Wet Pavement  #93A0A8  — derived (cooled toward blue) muted text
-   ========================================================================== */
-:root {
-  --navy: #10161D;
-  --bark: #1E262F;
-  --bark-light: #2B3641;      /* derived tint of Black Pearl, for hover states */
-  --oxblood: #5E7C99;
-  --oxblood-light: #7B9AB5;   /* derived tint of Blue Prince, for hover states */
-  --slate: #415365;
-  --slate-light: #56697C;     /* derived tint of Stratosphere, for borders on dark */
-  --parchment: #D6D4C9;
-  --parchment-deep: #93A0A8;  /* derived, cooled — muted text */
-  --parchment-pale: #EFEDE4;  /* derived, lighter tint — headings */
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>khatt خط</title>
+<meta name="description" content="Ceramics, crochet, thrifted finds, and stickers — handmade and hand-picked.">
 
-  --line: #26313C;
-  --header-bg: #D9D7CC;       /* light band behind header/footer, for the dark-blue logo */
-  --header-ink: #1E262F;      /* dark-blue logo + header/footer text */
-  --radius: 10px;
-  --radius-sm: 6px;
-  --shadow-sm: 0 3px 12px rgba(0,0,0,0.32);
-  --shadow-md: 0 14px 34px rgba(0,0,0,0.45);
+<!--
+  FONTS
+  - Urdu logo mark uses Noto Nastaliq Urdu (a real, free Nastaleeq typeface).
+  - "khatt" (English logo) and body copy fall back to free look-alikes for
+    PP Pangaia and Baby Sleepwear until you install the real files — see
+    fonts/README.txt for how to switch over. Noto Serif Gurmukhi is used
+    as written (it renders Latin text fine and reads as a clean serif).
+-->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600&family=Noto+Serif+Gurmukhi:wght@400;500;600&family=Noto+Nastaliq+Urdu:wght@500;700&family=Caveat:wght@600&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
 
-  /* Fonts — see fonts/local-fonts.css to switch to the real
-     PP Pangaia / Baby Sleepwear files once you've installed them */
-  --font-logo-en: 'Fraunces', 'PP Pangaia', serif;      /* stand-in for PP Pangaia */
-  --font-display: 'Fraunces', serif;
-  --font-body: 'Noto Serif Gurmukhi', serif;
-  --font-urdu: 'Noto Nastaliq Urdu', serif;
-  --font-accent-script: 'Caveat', 'Baby Sleepwear', cursive; /* stand-in for Baby Sleepwear */
-  --font-mono: 'Space Mono', ui-monospace, monospace;
+<link rel="stylesheet" href="fonts/local-fonts.css">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
 
-  /* Optional page background image — see instructions below */
-  --bg-image: none;
+<!-- ============ HEADER ============ -->
+<header class="site-header">
+  <div class="wrap header-inner">
+    <a href="#top" class="logo">
+      <span class="logo-en">Khatt</span>
+      <span class="logo-ur" lang="ur" dir="rtl">خط</span>
+    </a>
 
-  --dur: 0.2s;
-}
+    <nav class="main-nav" aria-label="Main">
+      <a href="#shop">Shop</a>
+      
+      <a href="#contact">Contact</a>
+    </nav>
 
-/*
-  BACKGROUND IMAGE
-  =================
-  To use a photo/texture behind the whole site instead of the flat navy:
-  1. Drop an image into an /images folder next to this file.
-  2. Change the line below to:
-       --bg-image: url('images/your-file.jpg');
-  A dark overlay is applied automatically (see body::before) so text stays
-  readable over any image.
-*/
+    <button class="cart-btn" id="cartOpenBtn" aria-haspopup="true" aria-controls="cartDrawer">
+      <span class="icon-cart" aria-hidden="true">
+        <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M3 4h2l2.4 12.2A2 2 0 0 0 9.36 18H18a2 2 0 0 0 1.96-1.6L21.5 8H6"/><circle cx="10" cy="21" r="1.2" fill="currentColor" stroke="none"/><circle cx="18" cy="21" r="1.2" fill="currentColor" stroke="none"/></svg>
+      </span>
+      <span>Cart</span>
+      <span class="cart-count" id="cartCount">0</span>
+    </button>
+  </div>
+</header>
 
-@media (prefers-reduced-motion: reduce) {
-  :root { --dur: 0s; }
-  * { animation-duration: 0.001s !important; animation-iteration-count: 1 !important; }
-}
+<main id="top">
 
-/* ==========================================================================
-   Reset & base
-   ========================================================================== */
-* { box-sizing: border-box; }
-html { scroll-behavior: smooth; }
-@media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
+  <!-- ============ HERO — small, minimalist product slideshow, contained
+       to the page width instead of full-bleed ============ -->
+  <section class="hero">
+    <div class="wrap hero-inner">
+      <div class="hero-banner" id="slideshow" aria-roledescription="carousel" aria-label="Featured products">
+        <div class="slideshow-track" id="slideshowTrack"></div>
 
-body {
-  margin: 0;
-  position: relative;
-  background-color: var(--navy);
-  background-image: var(--bg-image);
-  background-size: cover;
-  background-position: center;
-  background-attachment: fixed;
-  color: var(--parchment);
-  font-family: var(--font-body);
-  font-size: 16px;
-  line-height: 1.6;
-  -webkit-font-smoothing: antialiased;
-}
-/* dark overlay so text stays legible if a background image is set */
-body::before {
-  content: "";
-  position: fixed;
-  inset: 0;
-  background: linear-gradient(180deg, rgba(16,22,29,0.88), rgba(16,22,29,0.94));
-  pointer-events: none;
-  z-index: 0;
-}
-header, main, footer, .drawer-overlay, .cart-drawer, .modal-overlay {
-  position: relative;
-  z-index: 1;
-}
+        <button class="slide-nav slide-prev" id="slidePrev" aria-label="Previous product">
+          <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M15 5l-7 7 7 7"/></svg>
+        </button>
+        <button class="slide-nav slide-next" id="slideNext" aria-label="Next product">
+          <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M9 5l7 7-7 7"/></svg>
+        </button>
 
-h1, h2, h3 { font-family: var(--font-display); font-weight: 500; margin: 0 0 0.5em; line-height: 1.15; color: var(--parchment-pale); }
-p { margin: 0 0 1em; color: var(--parchment-deep); }
-a { color: var(--parchment-pale); }
-.mono { font-family: var(--font-mono); }
+        <div class="slide-dots" id="slideDots" role="tablist" aria-label="Choose slide"></div>
+      </div>
 
-img, button, input, select, textarea { font-family: inherit; }
-button { cursor: pointer; }
+      <div class="hero-caption">
+        <h1>Handmade &amp; Hand&#8209;picked</h1>
+        <p class="eyebrow">Sale is live !!</p>
+        <p class="hero-breadcrumb"><span class="breadcrumb-bar"></span>Shop <span class="breadcrumb-sep">:</span> Ceramics, crochet, thrift, stickers, jewelry <span class="breadcrumb-sep">:</span></p>
+      </div>
+    </div>
+  </section>
 
-:focus-visible {
-  outline: 3px solid var(--oxblood-light);
-  outline-offset: 2px;
-}
+  <!-- ============ SHOP ============ -->
+  <section class="shop" id="shop">
+    <div class="wrap">
 
-.wrap {
-  width: 100%;
-  max-width: 1180px;
-  margin: 0 auto;
-  padding: 0 24px;
-}
+      <div class="shop-header">
+        <h2 class="section-highlight">Our Collection</h2>
+        <p id="resultCount" class="result-count">Showing all pieces</p>
+      </div>
 
-/* ==========================================================================
-   Buttons
-   ========================================================================== */
-.btn {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-  border: none;
-  border-radius: 999px;
-  padding: 13px 26px;
-  font-family: var(--font-display);
-  font-weight: 500;
-  font-size: 0.95rem;
-  letter-spacing: 0.01em;
-  transition: transform var(--dur) ease, box-shadow var(--dur) ease, background var(--dur) ease;
-}
-.btn-primary { background: var(--oxblood); color: var(--parchment-pale); box-shadow: var(--shadow-sm); }
-.btn-primary:hover { background: var(--oxblood-light); transform: translateY(-1px); box-shadow: var(--shadow-md); }
-.btn-primary:disabled { background: var(--slate); color: var(--parchment-deep); cursor: not-allowed; transform: none; box-shadow: none; }
-.btn-secondary { background: none; color: var(--parchment); border: 1px solid var(--line); margin-top: 10px; }
-.btn-secondary:hover { border-color: var(--oxblood-light); color: var(--parchment-pale); }
-.btn-full { width: 100%; }
+      <div class="controls">
+        <div class="filter-pills" role="group" aria-label="Filter by category">
+          <button class="pill is-active" data-filter="all">All</button>
+          <button class="pill" data-filter="ceramics">Ceramics</button>
+          <button class="pill" data-filter="crochet">Crochet</button>
+          <button class="pill" data-filter="thrift">Thrifted</button>
+          <button class="pill" data-filter="stickers">Stickers</button>
+          <button class="pill" data-filter="jewelry">Jewelry</button>
+        </div>
 
-.payment-note { font-size: 0.85rem; color: var(--parchment-deep); background: var(--bark); border: 1px solid var(--line); border-radius: var(--radius-sm); padding: 12px 14px; line-height: 1.6; }
-.payment-note strong { color: var(--parchment-pale); }
-.payment-note a { color: var(--oxblood-light); }
+        <label class="sort-label" for="sortSelect">
+          Sort
+          <select id="sortSelect">
+            <option value="featured">Featured</option>
+            <option value="price-asc">Price: low to high</option>
+            <option value="price-desc">Price: high to low</option>
+            <option value="name-asc">Name: A–Z</option>
+          </select>
+        </label>
+      </div>
 
-.payment-ack { display: flex; align-items: flex-start; gap: 10px; font-size: 0.85rem; color: var(--parchment); margin: 16px 0 18px; cursor: pointer; }
-.payment-ack input { margin-top: 3px; width: 16px; height: 16px; accent-color: var(--oxblood); flex-shrink: 0; }
+      <div class="product-grid" id="productGrid"></div>
 
-.icon-btn {
-  background: transparent;
-  border: none;
-  color: var(--parchment);
-  padding: 6px;
-  border-radius: 50%;
-  line-height: 1;
-  display: inline-flex;
-}
-.icon-btn:hover { background: var(--bark-light); }
+      <p class="empty-state" id="emptyState" hidden>Nothing here yet — try a different category.</p>
+    </div>
+  </section>
 
-/* ==========================================================================
-   Header
-   ========================================================================== */
-.site-header {
-  position: sticky;
-  top: 0;
-  z-index: 40;
-  background: var(--header-bg);
-  border-bottom: 1px solid rgba(30,38,47,0.15);
-}
-.header-inner {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 16px;
-  padding-top: 14px;
-  padding-bottom: 14px;
-}
-.logo {
-  display: inline-flex;
-  align-items: baseline;
-  gap: 10px;
-  text-decoration: none;
-  white-space: nowrap;
-}
-.logo-en {
-  font-family: var(--font-logo-en);
-  font-size: 1.5rem;
-  font-weight: 600;
-  color: var(--header-ink);
-}
-.logo-ur {
-  font-family: var(--font-urdu);
-  font-size: 1.5rem;
-  font-weight: 700;
-  color: var(--header-ink);
-  line-height: 0.5;
-}
+  
 
-.main-nav { display: flex; gap: 28px; }
-.main-nav a { color: var(--header-ink); text-decoration: none; font-weight: 500; font-size: 0.95rem; opacity: 0.82; }
-.main-nav a:hover { opacity: 1; color: var(--oxblood); }
+  <!-- ============ CONTACT / FOOTER ============ -->
+  <footer class="site-footer" id="contact">
+    <div class="wrap footer-inner">
+      <div>
+        <p class="logo footer-logo">
+          <span class="logo-en">khatt</span>
+          <span class="logo-ur" lang="ur" dir="rtl">خط</span>
+        </p>
+        <p class="footer-note">Questions about an order?  Contact Us at <a href="https://www.instagram.com/khatt.inc/" target="_blank" rel="noopener noreferrer">Khatt.inc</a></p>
+      </div>
+      <p class="footer-note">&copy; <span id="year"></span> Khatt.</p>
+    </div>
+  </footer>
 
-.cart-btn {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  background: rgba(30,38,47,0.06);
-  border: 1px solid rgba(30,38,47,0.28);
-  border-radius: 999px;
-  padding: 9px 16px;
-  font-weight: 500;
-  font-size: 0.9rem;
-  color: var(--header-ink);
-}
-.cart-btn:hover { border-color: var(--oxblood); }
-.icon-cart { display: inline-flex; }
-.cart-count {
-  background: var(--oxblood);
-  color: var(--parchment-pale);
-  font-family: var(--font-mono);
-  font-size: 0.72rem;
-  min-width: 20px;
-  height: 20px;
-  border-radius: 999px;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  padding: 0 5px;
-}
+</main>
 
-/* ==========================================================================
-   Hero — small, minimalist product slideshow: a compact rounded card,
-   contained to the page width (not full-bleed), that cycles through
-   featured pieces, sitting above the title / eyebrow / breadcrumb line.
-   ========================================================================== */
-.hero { padding: 34px 0 40px; }
-.hero-inner { display: flex; flex-direction: column; }
+<!-- ============ CART DRAWER ============ -->
+<div class="drawer-overlay" id="drawerOverlay"></div>
+<aside class="cart-drawer" id="cartDrawer" aria-label="Shopping cart" aria-hidden="true">
+  <div class="cart-drawer-head">
+    <h2>Your cart</h2>
+    <button class="icon-btn" id="cartCloseBtn" aria-label="Close cart">
+      <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M5 5l14 14M19 5L5 19"/></svg>
+    </button>
+  </div>
 
-.hero-banner {
-  position: relative;
-  width: min(340px, 100%);
-  height: 200px;
-  overflow: hidden;
-  background: var(--bark);
-  border: 1px solid var(--line);
-  border-radius: var(--radius);
-  box-shadow: var(--shadow-md);
-  margin-bottom: 26px;
-}
-.slideshow-track { position: relative; width: 100%; height: 100%; }
-.slide {
-  position: absolute;
-  inset: 0;
-  opacity: 0;
-  transform: scale(1.02);
-  transition: opacity 0.6s ease, transform 0.6s ease;
-  pointer-events: none;
-  cursor: pointer;
-}
-.slide.is-active { opacity: 1; transform: scale(1); pointer-events: auto; }
-.slide-photo { width: 100%; height: 100%; object-fit: cover; display: block; }
-.slide-photo-fallback { display: flex; align-items: center; justify-content: center; color: var(--parchment); background: var(--bark); width: 100%; height: 100%; }
-.slide-photo-fallback svg { width: 30%; height: 30%; opacity: 0.7; }
-.slide-caption {
-  position: absolute;
-  left: 0; right: 0; bottom: 0;
-  padding: 30px 20px 16px;
-  background: linear-gradient(180deg, rgba(16,22,29,0) 0%, rgba(16,22,29,0.75) 75%, rgba(16,22,29,0.9) 100%);
-}
-.slide-eyebrow {
-  font-family: var(--font-mono);
-  font-size: 0.6rem;
-  text-transform: uppercase;
-  letter-spacing: 0.08em;
-  color: var(--parchment-deep);
-  margin-bottom: 4px;
-}
-.slide-name { font-family: var(--font-display); font-size: 1rem; color: var(--parchment-pale); margin: 0 0 2px; }
-.slide-price { font-family: var(--font-mono); color: var(--oxblood-light); font-size: 0.82rem; }
+  <div class="cart-items" id="cartItems"></div>
 
-.slide-nav {
-  position: absolute;
-  top: 50%;
-  transform: translateY(-50%);
-  background: rgba(16,22,29,0.55);
-  border: 1px solid rgba(239,237,228,0.25);
-  color: var(--parchment-pale);
-  width: 24px;
-  height: 24px;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 2;
-}
-.slide-nav:hover { background: var(--oxblood); border-color: var(--oxblood); }
-.slide-prev { left: 8px; }
-.slide-next { right: 8px; }
+  <p class="cart-empty-msg" id="cartEmptyMsg" hidden>Your cart's empty — go fill it with something good.</p>
 
-.slide-dots {
-  position: absolute;
-  bottom: 8px;
-  right: 12px;
-  display: flex;
-  gap: 5px;
-  z-index: 2;
-}
-.slide-dot {
-  width: 5px;
-  height: 5px;
-  border-radius: 50%;
-  background: rgba(239,237,228,0.35);
-  border: none;
-  padding: 0;
-}
-.slide-dot.is-active { background: var(--oxblood-light); width: 14px; border-radius: 3px; transition: width var(--dur) ease; }
+  <div class="cart-drawer-foot">
+    <div class="cart-subtotal-row">
+      <span>Subtotal</span>
+      <span id="cartSubtotal" class="mono">Rs 0</span>
+    </div>
+    <div class="cart-subtotal-row">
+      <span>Delivery</span>
+      <span id="cartDelivery" class="mono">Rs 0</span>
+    </div>
+    <div class="cart-subtotal-row">
+      <span>Total</span>
+      <span id="cartTotal" class="mono">Rs 0</span>
+    </div>
+    <p class="cart-note">Delivery charge applies to every order.</p>
+    <button class="btn btn-primary btn-full" id="checkoutBtn">Checkout</button>
+  </div>
+</aside>
 
-.hero-caption h1 { font-size: 1.6rem; margin: 0 0 12px; max-width: 20ch; }
-.eyebrow {
-  display: inline-block;
-  font-family: var(--font-mono);
-  text-transform: uppercase;
-  letter-spacing: 0.08em;
-  font-size: 0.7rem;
-  color: var(--parchment-pale);
-  background: var(--slate);
-  padding: 5px 10px;
-  border-radius: var(--radius-sm);
-  margin: 0;
-}
-.hero-breadcrumb {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  font-family: var(--font-mono);
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-  font-size: 0.75rem;
-  color: var(--parchment-deep);
-  margin: 16px 0 0;
-}
-.breadcrumb-bar { width: 3px; align-self: stretch; background: var(--slate-light); border-radius: 2px; flex-shrink: 0; }
-.breadcrumb-sep { color: var(--slate-light); }
+<!-- ============ PRODUCT DETAIL MODAL ============ -->
+<div class="modal-overlay" id="productOverlay">
+  <div class="modal product-modal" role="dialog" aria-modal="true" aria-labelledby="productTitle">
+    <div class="modal-head">
+      <h2 id="productTitle">Product</h2>
+      <button class="icon-btn" id="productCloseBtn" aria-label="Close">
+        <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M5 5l14 14M19 5L5 19"/></svg>
+      </button>
+    </div>
+    <div class="modal-body product-modal-body">
+      <div class="product-slideshow" id="productSlideshow">
+        <div class="product-slide-track" id="productSlideTrack"></div>
+        <button class="slide-nav slide-prev" id="productSlidePrev" aria-label="Previous">
+          <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M15 5l-7 7 7 7"/></svg>
+        </button>
+        <button class="slide-nav slide-next" id="productSlideNext" aria-label="Next">
+          <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M9 5l7 7-7 7"/></svg>
+        </button>
+        <div class="slide-dots" id="productSlideDots"></div>
+      </div>
 
-/* ==========================================================================
-   Shop controls
-   ========================================================================== */
-.shop { padding: 20px 0 80px; }
-.shop-header { display: flex; align-items: baseline; justify-content: space-between; gap: 16px; flex-wrap: wrap; margin-bottom: 22px; }
-.shop-header h2 { margin: 0; }
+      <div class="product-info">
+        <div class="product-info-badges">
+          <span class="card-badge" id="productBadge"></span>
+          <span class="card-tag product-tag-inline" id="productTag" hidden></span>
+        </div>
+        <p class="product-desc" id="productDesc"></p>
+        <p class="product-price mono" id="productPrice"></p>
+        <div class="product-variants" id="productVariants" hidden></div>
+        <button class="btn btn-primary btn-full" id="productAddBtn">Add to cart</button>
+      </div>
+    </div>
+  </div>
+</div>
 
-/* The full-width "WRITING IS SCREAMING IN SILENCE" style highlight bar
-   from the moodboard — a filled, mono, uppercase label instead of a
-   plain heading. */
-.shop-header h2.section-highlight {
-  font-family: var(--font-mono);
-  text-transform: uppercase;
-  letter-spacing: 0.04em;
-  font-size: 1rem;
-  font-weight: 700;
-  background: var(--slate);
-  color: var(--parchment-pale);
-  padding: 10px 16px;
-  border-radius: var(--radius-sm);
-}
-.result-count { font-family: var(--font-mono); font-size: 0.78rem; color: var(--parchment-deep); margin: 0; }
+<!-- ============ CHECKOUT MODAL ============ -->
+<div class="modal-overlay" id="checkoutOverlay">
+  <div class="modal" role="dialog" aria-modal="true" aria-labelledby="checkoutTitle">
 
-.controls {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 16px;
-  flex-wrap: wrap;
-  margin-bottom: 28px;
-  padding-bottom: 18px;
-  border-bottom: 1px solid var(--line);
-}
-.filter-pills { display: flex; gap: 8px; flex-wrap: wrap; }
-.pill {
-  border: 1px solid var(--line);
-  background: var(--bark);
-  color: var(--parchment);
-  font-family: var(--font-mono);
-  border-radius: var(--radius-sm);
-  padding: 8px 14px;
-  font-size: 0.78rem;
-  letter-spacing: 0.02em;
-  font-weight: 500;
-  transition: background var(--dur) ease, color var(--dur) ease, border-color var(--dur) ease;
-}
-.pill:hover { border-color: var(--oxblood-light); }
-.pill.is-active { background: var(--oxblood); color: var(--parchment-pale); border-color: var(--oxblood); }
+    <!-- Step 1: details form -->
+    <div id="checkoutForm">
+      <div class="modal-head">
+        <h2 id="checkoutTitle">Checkout</h2>
+        <button class="icon-btn" id="checkoutCloseBtn" aria-label="Close checkout">
+          <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M5 5l14 14M19 5L5 19"/></svg>
+        </button>
+      </div>
 
-.sort-label {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  font-size: 0.85rem;
-  font-weight: 500;
-  color: var(--parchment-deep);
-}
-.sort-label select {
-  border: 1px solid var(--line);
-  background: var(--bark);
-  color: var(--parchment);
-  border-radius: var(--radius-sm);
-  padding: 8px 10px;
-  font-size: 0.85rem;
-}
+      <div class="modal-body">
+        <div class="order-summary" id="orderSummary"></div>
+        <div class="order-total-row" style="border-bottom:none; padding-bottom:0; font-weight:400; font-size:0.9rem;">
+          <span>Subtotal</span>
+          <span id="orderSubtotal" class="mono">Rs 0</span>
+        </div>
+        <div class="order-total-row" style="padding-top:0; font-weight:400; font-size:0.9rem;">
+          <span>Delivery</span>
+          <span id="orderDelivery" class="mono">Rs 0</span>
+        </div>
+        <div class="order-total-row">
+          <span>Total</span>
+          <span id="orderTotal" class="mono">Rs 0</span>
+        </div>
 
-/* ==========================================================================
-   Product grid
-   ========================================================================== */
-.product-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
-  gap: 22px;
-}
+        <!-- The form name is CustomerOrder-form -->
+<form id="detailsForm" novalidate name="CustomerOrder-form" method="POST" data-netlify="true" netlify-honeypot="bot-field">
+  
+  <!-- FIX: The value must match the form name exactly -->
+  <input type="hidden" name="form-name" value="CustomerOrder-form">
+  
+  <p class="hidden" style="display:none;">
+    <label>Don't fill this out if you're human: <input name="bot-field"></label>
+  </p>
+          <input type="hidden" name="order-id" value="">
+          <input type="hidden" name="order-details" value="">
+          <h3 class="form-section-title">Shipping details</h3>
 
-.card {
-  background: var(--bark);
-  border: 1px solid var(--line);
-  border-radius: var(--radius);
-  overflow: hidden;
-  box-shadow: var(--shadow-sm);
-  display: flex;
-  flex-direction: column;
-  cursor: pointer;
-  transition: transform var(--dur) ease, box-shadow var(--dur) ease, border-color var(--dur) ease;
-}
-.card:hover { transform: translateY(-3px); box-shadow: var(--shadow-md); border-color: var(--oxblood-light); }
-.card:focus-visible { outline: 2px solid var(--oxblood-light); outline-offset: 2px; }
+          <label class="field">
+            <span>Full name</span>
+            <input type="text" name="name" required autocomplete="name">
+          </label>
 
-.card-photo {
-  position: relative;
-  aspect-ratio: 1 / 1;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: radial-gradient(circle at 50% 40%, var(--bark-light), var(--bark));
-  color: var(--parchment);
-}
-.card-photo svg { width: 40%; height: 40%; opacity: 0.9; }
-.card-photo img { width: 100%; height: 100%; object-fit: cover; }
-.card-badge {
-  position: absolute;
-  top: 10px;
-  left: 10px;
-  background: rgba(16,22,29,0.75);
-  font-family: var(--font-mono);
-  font-size: 0.63rem;
-  text-transform: uppercase;
-  letter-spacing: 0.04em;
-  padding: 4px 8px;
-  border-radius: 999px;
-  color: var(--parchment);
-  border: 1px solid var(--line);
-}
-.card-tag {
-  position: absolute;
-  bottom: 10px;
-  right: 10px;
-  background: var(--oxblood);
-  color: var(--parchment-pale);
-  font-family: var(--font-display);
-  font-weight: 500;
-  font-size: 0.65rem;
-  padding: 5px 10px;
-  border-radius: var(--radius-sm);
-  box-shadow: var(--shadow-sm);
-}
-.card-tag-preorder { background: var(--slate); }
+          <label class="field">
+            <span>Email</span>
+            <input type="email" name="email" required autocomplete="email">
+          </label>
 
-.card-body { padding: 14px 16px 16px; display: flex; flex-direction: column; gap: 4px; flex: 1; }
-.card-name {
-  font-family: var(--font-mono);
-  font-weight: 500;
-  font-size: 0.85rem;
-  letter-spacing: 0.01em;
-  color: var(--parchment-pale);
-  display: flex;
-  align-items: center;
-  gap: 7px;
-}
-.card-name::before {
-  content: "";
-  width: 0;
-  height: 0;
-  border-top: 4.5px solid transparent;
-  border-bottom: 4.5px solid transparent;
-  border-left: 7px solid var(--oxblood-light);
-  flex-shrink: 0;
-}
-.card-desc { font-size: 0.82rem; color: var(--parchment-deep); margin: 0 0 8px; }
-.card-foot { margin-top: auto; display: flex; align-items: center; justify-content: space-between; gap: 10px; }
-.card-price { font-family: var(--font-mono); font-weight: 700; font-size: 1rem; color: var(--parchment-pale); }
+          <label class="field">
+            <span>Phone</span>
+            <input type="tel" name="phone" required autocomplete="tel">
+          </label>
 
-.add-btn {
-  background: var(--slate);
-  color: var(--parchment-pale);
-  border: none;
-  border-radius: 999px;
-  padding: 8px 14px;
-  font-size: 0.8rem;
-  font-weight: 500;
-  transition: background var(--dur) ease;
-}
-.add-btn:hover { background: var(--oxblood); }
-.add-btn.is-added { background: var(--oxblood-light); }
+          <label class="field">
+            <span>Address</span>
+            <input type="text" name="address" required autocomplete="street-address">
+          </label>
 
-.empty-state { text-align: center; padding: 48px 0; color: var(--parchment-deep); }
+          <div class="field-row">
+            <label class="field">
+              <span>City</span>
+              <input type="text" name="city" required autocomplete="address-level2">
+            </label>
+            <label class="field">
+              <span>Postal code</span>
+              <input type="text" name="zip" required autocomplete="postal-code">
+            </label>
+          </div>
 
-/* ==========================================================================
-   About
-   ========================================================================== */
-.about { background: var(--bark); padding: 64px 0; border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); }
-.about-inner { max-width: 620px; margin: 0 auto; text-align: center; }
-.about h2 { font-size: 1.5rem; }
+          <label class="field">
+            <span>Note for us (optional)</span>
+            <textarea name="note" rows="2"></textarea>
+          </label>
 
-/* ==========================================================================
-   Footer
-   ========================================================================== */
-.site-footer { padding: 40px 0; background: var(--header-bg); border-top: 1px solid rgba(30,38,47,0.15); }
-.footer-inner { display: flex; align-items: center; justify-content: space-between; gap: 16px; flex-wrap: wrap; }
-.footer-logo { margin: 0 0 4px; }
-.footer-note { font-size: 0.82rem; margin: 0; color: var(--header-ink); opacity: 0.75; }
-.footer-note a { color: var(--header-ink); }
+          <button type="submit" class="btn btn-primary btn-full">Continue to payment</button>
+        </form>
+      </div>
+    </div>
 
-/* ==========================================================================
-   Cart drawer
-   ========================================================================== */
-.drawer-overlay, .modal-overlay {
-  position: fixed;
-  inset: 0;
-  background: rgba(0, 0, 0, 0.55);
-  opacity: 0;
-  pointer-events: none;
-  transition: opacity var(--dur) ease;
-  z-index: 50;
-}
-.drawer-overlay.is-open, .modal-overlay.is-open { opacity: 1; pointer-events: auto; }
+    <!-- Step 2: payment instructions -->
+    <div id="checkoutPayment" hidden>
+      <div class="modal-head">
+        <h2>Payment</h2>
+        <button class="icon-btn" id="paymentCloseBtn" aria-label="Close checkout">
+          <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M5 5l14 14M19 5L5 19"/></svg>
+        </button>
+      </div>
 
-.cart-drawer {
-  position: fixed;
-  top: 0;
-  right: 0;
-  height: 100%;
-  width: min(400px, 100%);
-  background: var(--bark);
-  box-shadow: -8px 0 24px rgba(0,0,0,0.4);
-  z-index: 60;
-  display: flex;
-  flex-direction: column;
-  transform: translateX(100%);
-  transition: transform var(--dur) ease;
-  border-left: 1px solid var(--line);
-}
-.cart-drawer.is-open { transform: translateX(0); }
+      <div class="modal-body">
+        <div class="order-total-row">
+          <span>Total due</span>
+          <span id="paymentTotal" class="mono">Rs 0</span>
+        </div>
 
-.cart-drawer-head {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 18px 20px;
-  border-bottom: 1px solid var(--line);
-}
-.cart-drawer-head h2 { margin: 0; font-size: 1.15rem; }
+        <p class="payment-note">We only accept Advance Payment. You Can Transfer The Total Amount to:
+          <br>JazzCash: <strong>03084202707</strong>
+          <br>Account Name: <strong>Samrina Zia Gul</strong>
+        </p>
 
-.cart-items { flex: 1; overflow-y: auto; padding: 12px 20px; }
-.cart-empty-msg { text-align: center; padding: 40px 20px; color: var(--parchment-deep); }
+        <p class="payment-note">Send the payment receipt/screenshot to our Instagram messages —
+          <a href="https://www.instagram.com/khatt.inc/" target="_blank" rel="noopener noreferrer">@khatt.inc</a>.
+        </p>
 
-.cart-item { display: flex; gap: 12px; padding: 14px 0; border-bottom: 1px solid var(--line); }
-.cart-item-photo { width: 56px; height: 56px; border-radius: var(--radius-sm); display: flex; align-items: center; justify-content: center; flex-shrink: 0; background: var(--navy); border: 1px solid var(--line); color: var(--parchment); }
-.cart-item-photo svg { width: 55%; height: 55%; }
-.cart-item-photo img { width: 100%; height: 100%; object-fit: cover; border-radius: var(--radius-sm); }
-.cart-item-info { flex: 1; min-width: 0; }
-.cart-item-name { font-weight: 500; font-size: 0.9rem; margin: 0 0 2px; color: var(--parchment-pale); }
-.cart-item-price { font-family: var(--font-mono); font-size: 0.8rem; color: var(--parchment-deep); margin: 0 0 8px; }
+        <label class="payment-ack">
+          <input type="checkbox" id="paymentAckCheckbox">
+          <span>I understand my order will only be dispatched after payment is received.</span>
+        </label>
 
-.qty-stepper { display: inline-flex; align-items: center; border: 1px solid var(--line); border-radius: 999px; }
-.qty-stepper button { background: none; border: none; width: 26px; height: 26px; font-size: 0.9rem; color: var(--parchment); }
-.qty-stepper button:hover { color: var(--oxblood-light); }
-.qty-stepper span { min-width: 20px; text-align: center; font-family: var(--font-mono); font-size: 0.82rem; color: var(--parchment); }
+        <button type="button" class="btn btn-primary btn-full" id="paymentSentBtn" disabled>Confirm order</button>
+        <button type="button" class="btn btn-secondary btn-full" id="paymentBackBtn">Back to details</button>
+      </div>
+    </div>
 
-.cart-item-remove { background: none; border: none; color: var(--parchment-deep); font-size: 0.75rem; text-decoration: underline; padding: 0; margin-left: 8px; }
-.cart-item-remove:hover { color: var(--oxblood-light); }
-.cart-item-row-end { display: flex; align-items: center; justify-content: space-between; }
+    <!-- Step 2: confirmation -->
+    <div id="checkoutConfirm" hidden>
+      <div class="modal-body confirm-body">
+        <div class="confirm-mark" aria-hidden="true">
+          <svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M5 13l4 4L19 7"/></svg>
+        </div>
+        <h2>Thanks, <span id="confirmName">friend</span>.</h2>
+        <p>Your order <strong id="confirmOrderId" class="mono"></strong> is in. A confirmation will land in <span id="confirmEmail"></span>.</p>
+        <button class="btn btn-primary" id="confirmCloseBtn">Back to shop</button>
+      </div>
+    </div>
 
-.cart-drawer-foot { padding: 16px 20px 20px; border-top: 1px solid var(--line); }
-.cart-subtotal-row { display: flex; justify-content: space-between; font-weight: 700; font-size: 1rem; margin-bottom: 4px; color: var(--parchment-pale); }
-.cart-note { font-size: 0.75rem; margin-bottom: 14px; }
+  </div>
+</div>
 
-/* ==========================================================================
-   Checkout modal
-   ========================================================================== */
-.modal {
-  position: fixed;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -48%);
-  width: min(480px, 92vw);
-  max-height: 88vh;
-  overflow-y: auto;
-  background: var(--bark);
-  border: 1px solid var(--line);
-  border-radius: var(--radius);
-  box-shadow: var(--shadow-md);
-  z-index: 61;
-  opacity: 0;
-  pointer-events: none;
-  transition: opacity var(--dur) ease, transform var(--dur) ease;
-}
-.modal-overlay.is-open .modal { opacity: 1; pointer-events: auto; transform: translate(-50%, -50%); }
-
-.modal-head { display: flex; align-items: center; justify-content: space-between; padding: 18px 22px; border-bottom: 1px solid var(--line); }
-.modal-head h2 { margin: 0; font-size: 1.15rem; }
-.modal-body { padding: 20px 22px 26px; }
-
-.order-summary { margin-bottom: 12px; }
-.order-summary-row { display: flex; justify-content: space-between; font-size: 0.85rem; padding: 6px 0; color: var(--parchment-deep); }
-.order-total-row { display: flex; justify-content: space-between; font-weight: 700; font-size: 1.05rem; padding: 10px 0 18px; border-bottom: 1px dashed var(--line); margin-bottom: 18px; color: var(--parchment-pale); }
-
-.form-section-title { font-size: 0.95rem; margin-bottom: 14px; }
-.field { display: block; margin-bottom: 14px; font-size: 0.82rem; font-weight: 600; color: var(--parchment); }
-.field span { display: block; margin-bottom: 5px; }
-.field input, .field textarea {
-  width: 100%;
-  border: 1px solid var(--line);
-  border-radius: var(--radius-sm);
-  padding: 10px 12px;
-  font-size: 0.9rem;
-  font-weight: 400;
-  color: var(--navy);
-  background: var(--parchment-pale);
-  resize: vertical;
-}
-.field input:focus, .field textarea:focus { border-color: var(--oxblood-light); }
-.field-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
-.form-note { font-size: 0.75rem; margin-bottom: 16px; }
-
-.confirm-body { text-align: center; padding-top: 8px; }
-.confirm-mark {
-  width: 56px;
-  height: 56px;
-  margin: 0 auto 18px;
-  border-radius: 50%;
-  background: var(--oxblood);
-  color: var(--parchment-pale);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-.confirm-body h2 { font-size: 1.4rem; }
-
-/* ==========================================================================
-   Product detail modal
-   ========================================================================== */
-.product-modal { width: min(560px, 94vw); }
-.product-modal-body { padding: 0; }
-
-.product-slideshow {
-  position: relative;
-  aspect-ratio: 1 / 1;
-  background: var(--navy);
-  border-bottom: 1px solid var(--line);
-  overflow: hidden;
-}
-.product-slide-track { position: relative; width: 100%; height: 100%; }
-.p-slide {
-  position: absolute;
-  inset: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  opacity: 0;
-  pointer-events: none;
-  transition: opacity var(--dur) ease;
-}
-.p-slide.is-active { opacity: 1; pointer-events: auto; }
-.p-slide img, .p-slide video { width: 100%; height: 100%; object-fit: cover; }
-.p-slide-icon { width: 45%; height: 45%; color: var(--parchment); }
-.p-slide-icon svg { width: 100%; height: 100%; }
-
-.product-info { padding: 18px 22px 24px; }
-.product-info-badges { display: flex; align-items: center; gap: 8px; margin-bottom: 12px; }
-.product-tag-inline { position: static; box-shadow: none; }
-.product-desc { font-size: 0.88rem; color: var(--parchment-deep); margin: 0 0 14px; line-height: 1.5; }
-.product-price { font-size: 1.3rem; font-weight: 700; color: var(--parchment-pale); margin: 0 0 16px; }
-
-/* Size + article selectors on a variant product's detail page */
-.product-variants { margin-bottom: 16px; }
-.variant-fields { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
-.variant-fields.variant-fields-single { grid-template-columns: 1fr; }
-.variant-field { display: block; font-size: 0.82rem; font-weight: 600; color: var(--parchment); }
-.variant-field span { display: block; margin-bottom: 5px; }
-.variant-field select {
-  width: 100%;
-  border: 1px solid var(--line);
-  border-radius: var(--radius-sm);
-  padding: 10px 12px;
-  font-size: 0.9rem;
-  font-weight: 400;
-  color: var(--navy);
-  background: var(--parchment-pale);
-}
-.variant-field select:disabled { opacity: 0.6; }
-.variant-field select:focus { border-color: var(--oxblood-light); outline: none; }
-
-/* Size/article label on cart + checkout summary rows */
-.cart-item-variant { font-weight: 400; color: var(--parchment-deep); font-size: 0.8em; }
-.qty-fixed { font-family: var(--font-mono); font-size: 0.82rem; color: var(--parchment-deep); }
-
-/* Grid card button for a variant product ("Choose size & article" etc.) */
-.add-btn-select { font-size: 0.78rem; }
-
-/* ==========================================================================
-   Responsive
-   ========================================================================== */
-@media (max-width: 860px) {
-  .main-nav { display: none; }
-}
-
-@media (max-width: 520px) {
-  .wrap { padding: 0 16px; }
-  .hero-banner { width: 100%; height: 170px; }
-  .hero-caption h1 { font-size: 1.35rem; }
-  .controls { flex-direction: column; align-items: stretch; }
-  .field-row { grid-template-columns: 1fr; }
-  .cart-drawer { width: 100%; }
-}
+<script src="script.js"></script>
+</body>
+</html>
