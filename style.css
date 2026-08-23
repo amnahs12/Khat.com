@@ -229,16 +229,103 @@ button { cursor: pointer; }
 }
 
 /* ==========================================================================
-   Hero — kept deliberately average-sized: a caption + a product slideshow,
-   not a big marketing banner.
+   Hero — full-bleed photo banner (Notion-page inspired): edge-to-edge
+   slideshow of featured pieces, a gingham-ribbon accent overlapping its
+   bottom edge, then a big title, a highlighted "eyebrow" bar, and a
+   breadcrumb-style line underneath.
    ========================================================================== */
-.hero { padding: 40px 0 48px; }
-.hero-inner {
-  display: grid;
-  grid-template-columns: 220px 1fr;
-  gap: 32px;
-  align-items: center;
+.hero { padding: 0 0 40px; }
+
+.hero-banner {
+  position: relative;
+  width: 100%;
+  height: 340px;
+  overflow: hidden;
+  background: var(--bark);
+  border-bottom: 1px solid var(--line);
 }
+.slideshow-track { position: relative; width: 100%; height: 100%; }
+.slide {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  transform: scale(1.02);
+  transition: opacity 0.6s ease, transform 0.6s ease;
+  pointer-events: none;
+}
+.slide.is-active { opacity: 1; transform: scale(1); pointer-events: auto; }
+.slide-photo { width: 100%; height: 100%; object-fit: cover; display: block; }
+.slide-photo-fallback { display: flex; align-items: center; justify-content: center; color: var(--parchment); background: var(--bark); }
+.slide-photo-fallback svg { width: 30%; height: 30%; opacity: 0.7; }
+.slide-caption {
+  position: absolute;
+  left: 0; right: 0; bottom: 0;
+  padding: 60px 28px 22px;
+  background: linear-gradient(180deg, rgba(16,22,29,0) 0%, rgba(16,22,29,0.85) 68%, rgba(16,22,29,0.96) 100%);
+}
+.slide-eyebrow {
+  font-family: var(--font-mono);
+  font-size: 0.68rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--parchment-deep);
+  margin-bottom: 4px;
+}
+.slide-name { font-family: var(--font-display); font-size: 1.35rem; color: var(--parchment-pale); margin: 0 0 4px; }
+.slide-price { font-family: var(--font-mono); color: var(--oxblood-light); font-size: 1rem; }
+
+.slide-nav {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  background: rgba(16,22,29,0.55);
+  border: 1px solid rgba(239,237,228,0.25);
+  color: var(--parchment-pale);
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 2;
+}
+.slide-nav:hover { background: var(--oxblood); border-color: var(--oxblood); }
+.slide-prev { left: 16px; }
+.slide-next { right: 16px; }
+
+.slide-dots {
+  position: absolute;
+  bottom: 16px;
+  right: 24px;
+  display: flex;
+  gap: 6px;
+  z-index: 2;
+}
+.slide-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: rgba(239,237,228,0.35);
+  border: none;
+  padding: 0;
+}
+.slide-dot.is-active { background: var(--oxblood-light); width: 18px; border-radius: 3px; transition: width var(--dur) ease; }
+
+/* The gingham-bow accent from the moodboard, recolored to the blue
+   palette — overlaps the bottom edge of the banner as the page's one
+   deliberate flourish. */
+.hero-ribbon {
+  position: absolute;
+  left: 28px;
+  bottom: -18px;
+  width: 60px;
+  height: auto;
+  z-index: 3;
+  filter: drop-shadow(0 4px 10px rgba(0,0,0,0.4));
+}
+
+.hero-caption { padding-top: 34px; }
+.hero-caption h1 { font-size: 2rem; margin: 0 0 12px; max-width: 20ch; }
 .eyebrow {
   display: inline-block;
   font-family: var(--font-mono);
@@ -249,119 +336,43 @@ button { cursor: pointer; }
   background: var(--slate);
   padding: 5px 10px;
   border-radius: var(--radius-sm);
-  margin-bottom: 10px;
-}
-.hero-caption h1 {
-  font-size: 1.5rem;
   margin: 0;
 }
-
-.slideshow {
-  position: relative;
-  height: 220px;
-  border-radius: var(--radius);
-  overflow: hidden;
-  background: var(--bark);
-  border: 1px solid var(--line);
-}
-.slideshow-track {
-  position: relative;
-  width: 100%;
-  height: 100%;
-}
-.slide {
-  position: absolute;
-  inset: 0;
+.hero-breadcrumb {
   display: flex;
   align-items: center;
-  gap: 24px;
-  padding: 0 28px;
-  opacity: 0;
-  transform: translateX(12px);
-  transition: opacity 0.5s ease, transform 0.5s ease;
-  pointer-events: none;
-}
-.slide.is-active {
-  opacity: 1;
-  transform: translateX(0);
-  pointer-events: auto;
-}
-.slide-icon {
-  flex-shrink: 0;
-  width: 96px;
-  height: 96px;
-  border-radius: var(--radius-sm);
-  background: var(--navy);
-  border: 1px solid var(--line);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: var(--parchment);
-}
-.slide-icon img { width: 100%; height: 100%; object-fit: cover; border-radius: var(--radius-sm); }
-.slide-info { min-width: 0; }
-.slide-eyebrow {
+  gap: 10px;
   font-family: var(--font-mono);
-  font-size: 0.68rem;
   text-transform: uppercase;
-  letter-spacing: 0.06em;
+  letter-spacing: 0.05em;
+  font-size: 0.75rem;
   color: var(--parchment-deep);
-  margin-bottom: 4px;
+  margin: 16px 0 0;
 }
-.slide-name {
-  font-family: var(--font-display);
-  font-size: 1.2rem;
-  color: var(--parchment-pale);
-  margin: 0 0 4px;
-}
-.slide-price {
-  font-family: var(--font-mono);
-  color: var(--oxblood-light);
-  font-size: 0.95rem;
-}
-
-.slide-nav {
-  position: absolute;
-  top: 50%;
-  transform: translateY(-50%);
-  background: rgba(16,22,29,0.7);
-  border: 1px solid var(--line);
-  color: var(--parchment);
-  width: 34px;
-  height: 34px;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-.slide-nav:hover { background: var(--oxblood); border-color: var(--oxblood); }
-.slide-prev { left: 12px; }
-.slide-next { right: 12px; }
-
-.slide-dots {
-  position: absolute;
-  bottom: 12px;
-  left: 50%;
-  transform: translateX(-50%);
-  display: flex;
-  gap: 6px;
-}
-.slide-dot {
-  width: 6px;
-  height: 6px;
-  border-radius: 50%;
-  background: var(--slate-light);
-  border: none;
-  padding: 0;
-}
-.slide-dot.is-active { background: var(--oxblood-light); width: 18px; border-radius: 3px; transition: width var(--dur) ease; }
+.breadcrumb-bar { width: 3px; align-self: stretch; background: var(--slate-light); border-radius: 2px; flex-shrink: 0; }
+.breadcrumb-sep { color: var(--slate-light); }
 
 /* ==========================================================================
    Shop controls
    ========================================================================== */
 .shop { padding: 20px 0 80px; }
 .shop-header { display: flex; align-items: baseline; justify-content: space-between; gap: 16px; flex-wrap: wrap; margin-bottom: 22px; }
-.shop-header h2 { font-size: 1.6rem; margin: 0; }
+.shop-header h2 { margin: 0; }
+
+/* The full-width "WRITING IS SCREAMING IN SILENCE" style highlight bar
+   from the moodboard — a filled, mono, uppercase label instead of a
+   plain heading. */
+.shop-header h2.section-highlight {
+  font-family: var(--font-mono);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  font-size: 1rem;
+  font-weight: 700;
+  background: var(--slate);
+  color: var(--parchment-pale);
+  padding: 10px 16px;
+  border-radius: var(--radius-sm);
+}
 .result-count { font-family: var(--font-mono); font-size: 0.78rem; color: var(--parchment-deep); margin: 0; }
 
 .controls {
@@ -471,7 +482,25 @@ button { cursor: pointer; }
 .card-tag-preorder { background: var(--slate); }
 
 .card-body { padding: 14px 16px 16px; display: flex; flex-direction: column; gap: 4px; flex: 1; }
-.card-name { font-weight: 500; font-size: 0.98rem; color: var(--parchment-pale); }
+.card-name {
+  font-family: var(--font-mono);
+  font-weight: 500;
+  font-size: 0.85rem;
+  letter-spacing: 0.01em;
+  color: var(--parchment-pale);
+  display: flex;
+  align-items: center;
+  gap: 7px;
+}
+.card-name::before {
+  content: "";
+  width: 0;
+  height: 0;
+  border-top: 4.5px solid transparent;
+  border-bottom: 4.5px solid transparent;
+  border-left: 7px solid var(--oxblood-light);
+  flex-shrink: 0;
+}
 .card-desc { font-size: 0.82rem; color: var(--parchment-deep); margin: 0 0 8px; }
 .card-foot { margin-top: auto; display: flex; align-items: center; justify-content: space-between; gap: 10px; }
 .card-price { font-family: var(--font-mono); font-weight: 700; font-size: 1rem; color: var(--parchment-pale); }
@@ -698,15 +727,14 @@ button { cursor: pointer; }
    Responsive
    ========================================================================== */
 @media (max-width: 860px) {
-  .hero-inner { grid-template-columns: 1fr; }
   .main-nav { display: none; }
 }
 
 @media (max-width: 520px) {
   .wrap { padding: 0 16px; }
-  .slideshow { height: 260px; }
-  .slide { flex-direction: column; text-align: center; padding: 20px; gap: 12px; }
-  .slide-icon { width: 72px; height: 72px; }
+  .hero-banner { height: 260px; }
+  .hero-caption h1 { font-size: 1.6rem; }
+  .hero-ribbon { width: 46px; left: 16px; bottom: -14px; }
   .controls { flex-direction: column; align-items: stretch; }
   .field-row { grid-template-columns: 1fr; }
   .cart-drawer { width: 100%; }
