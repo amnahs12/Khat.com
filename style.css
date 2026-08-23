@@ -229,17 +229,16 @@ button { cursor: pointer; }
 }
 
 /* ==========================================================================
-   Hero — full-bleed photo banner (Notion-page inspired): edge-to-edge
-   slideshow of featured pieces, a gingham-ribbon accent overlapping its
-   bottom edge, then a big title, a highlighted "eyebrow" bar, and a
-   breadcrumb-style line underneath.
+   Hero — small, minimalist product slideshow: a compact full-bleed photo
+   banner that cycles through featured pieces, with a quiet caption overlay,
+   then a title, a highlighted "eyebrow" bar, and a breadcrumb-style line.
    ========================================================================== */
 .hero { padding: 0 0 40px; }
 
 .hero-banner {
   position: relative;
   width: 100%;
-  height: 340px;
+  height: 220px;
   overflow: hidden;
   background: var(--bark);
   border-bottom: 1px solid var(--line);
@@ -252,27 +251,28 @@ button { cursor: pointer; }
   transform: scale(1.02);
   transition: opacity 0.6s ease, transform 0.6s ease;
   pointer-events: none;
+  cursor: pointer;
 }
 .slide.is-active { opacity: 1; transform: scale(1); pointer-events: auto; }
 .slide-photo { width: 100%; height: 100%; object-fit: cover; display: block; }
-.slide-photo-fallback { display: flex; align-items: center; justify-content: center; color: var(--parchment); background: var(--bark); }
+.slide-photo-fallback { display: flex; align-items: center; justify-content: center; color: var(--parchment); background: var(--bark); width: 100%; height: 100%; }
 .slide-photo-fallback svg { width: 30%; height: 30%; opacity: 0.7; }
 .slide-caption {
   position: absolute;
   left: 0; right: 0; bottom: 0;
-  padding: 60px 28px 22px;
-  background: linear-gradient(180deg, rgba(16,22,29,0) 0%, rgba(16,22,29,0.85) 68%, rgba(16,22,29,0.96) 100%);
+  padding: 30px 20px 16px;
+  background: linear-gradient(180deg, rgba(16,22,29,0) 0%, rgba(16,22,29,0.75) 75%, rgba(16,22,29,0.9) 100%);
 }
 .slide-eyebrow {
   font-family: var(--font-mono);
-  font-size: 0.68rem;
+  font-size: 0.6rem;
   text-transform: uppercase;
   letter-spacing: 0.08em;
   color: var(--parchment-deep);
   margin-bottom: 4px;
 }
-.slide-name { font-family: var(--font-display); font-size: 1.35rem; color: var(--parchment-pale); margin: 0 0 4px; }
-.slide-price { font-family: var(--font-mono); color: var(--oxblood-light); font-size: 1rem; }
+.slide-name { font-family: var(--font-display); font-size: 1rem; color: var(--parchment-pale); margin: 0 0 2px; }
+.slide-price { font-family: var(--font-mono); color: var(--oxblood-light); font-size: 0.82rem; }
 
 .slide-nav {
   position: absolute;
@@ -281,8 +281,8 @@ button { cursor: pointer; }
   background: rgba(16,22,29,0.55);
   border: 1px solid rgba(239,237,228,0.25);
   color: var(--parchment-pale);
-  width: 36px;
-  height: 36px;
+  width: 28px;
+  height: 28px;
   border-radius: 50%;
   display: flex;
   align-items: center;
@@ -290,42 +290,29 @@ button { cursor: pointer; }
   z-index: 2;
 }
 .slide-nav:hover { background: var(--oxblood); border-color: var(--oxblood); }
-.slide-prev { left: 16px; }
-.slide-next { right: 16px; }
+.slide-prev { left: 12px; }
+.slide-next { right: 12px; }
 
 .slide-dots {
   position: absolute;
-  bottom: 16px;
-  right: 24px;
+  bottom: 10px;
+  right: 16px;
   display: flex;
   gap: 6px;
   z-index: 2;
 }
 .slide-dot {
-  width: 6px;
-  height: 6px;
+  width: 5px;
+  height: 5px;
   border-radius: 50%;
   background: rgba(239,237,228,0.35);
   border: none;
   padding: 0;
 }
-.slide-dot.is-active { background: var(--oxblood-light); width: 18px; border-radius: 3px; transition: width var(--dur) ease; }
+.slide-dot.is-active { background: var(--oxblood-light); width: 14px; border-radius: 3px; transition: width var(--dur) ease; }
 
-/* The gingham-bow accent from the moodboard, recolored to the blue
-   palette — overlaps the bottom edge of the banner as the page's one
-   deliberate flourish. */
-.hero-ribbon {
-  position: absolute;
-  left: 28px;
-  bottom: -18px;
-  width: 60px;
-  height: auto;
-  z-index: 3;
-  filter: drop-shadow(0 4px 10px rgba(0,0,0,0.4));
-}
-
-.hero-caption { padding-top: 34px; }
-.hero-caption h1 { font-size: 2rem; margin: 0 0 12px; max-width: 20ch; }
+.hero-caption { padding-top: 22px; }
+.hero-caption h1 { font-size: 1.6rem; margin: 0 0 12px; max-width: 20ch; }
 .eyebrow {
   display: inline-block;
   font-family: var(--font-mono);
@@ -732,9 +719,8 @@ button { cursor: pointer; }
 
 @media (max-width: 520px) {
   .wrap { padding: 0 16px; }
-  .hero-banner { height: 260px; }
-  .hero-caption h1 { font-size: 1.6rem; }
-  .hero-ribbon { width: 46px; left: 16px; bottom: -14px; }
+  .hero-banner { height: 170px; }
+  .hero-caption h1 { font-size: 1.35rem; }
   .controls { flex-direction: column; align-items: stretch; }
   .field-row { grid-template-columns: 1fr; }
   .cart-drawer { width: 100%; }
