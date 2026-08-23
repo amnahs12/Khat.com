@@ -263,7 +263,7 @@ const PRODUCTS = [
     articleStock: {} },
 
   { id: "j3", name: "Hand Cuff Bracelet", category: "jewelry", price: 300, desc: "Open-cuff style, one-size-fits-most.", tag: null,
-    image: "images/j3-main.jpg",
+    
     media: [
       { type: "image", src: "imageshc/hc3-main.webp" }
     ],
@@ -276,7 +276,7 @@ const PRODUCTS = [
       "6": 1 }},
 
   { id: "j4", name: "Gold Ring", category: "jewelry", price: 125, desc: "Shein rings.Please Check the size and article number before ordering", tag: null, featured: true,
-    image: "images/j4-main.jpg",
+    
     media: [
       { type: "image", src: "imagesjrg/j4(1).webp" },
       { type: "image", src: "imagesjrg/j4(2).webp" }
