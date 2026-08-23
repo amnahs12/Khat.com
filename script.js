@@ -629,7 +629,11 @@ document.getElementById("sortSelect").addEventListener("change", (e) => {
 });
 
 /* ==========================================================================
-   HERO SLIDESHOW — cycles through featured products
+   HERO SLIDESHOW — small, minimalist product slideshow. Cycles through
+   featured products, using .slide-photo / .slide-photo-fallback /
+   .slide-caption — the classes style.css actually styles for the compact
+   hero banner. Each slide is clickable (and keyboard-activatable) and
+   opens that product's detail modal, same as clicking a card below.
    ========================================================================== */
 const slideshowTrack = document.getElementById("slideshowTrack");
 const slideDots = document.getElementById("slideDots");
@@ -645,9 +649,11 @@ function renderSlideshow() {
   const featured = getFeatured();
 
   slideshowTrack.innerHTML = featured.map((p, i) => `
-    <div class="slide${i === 0 ? " is-active" : ""}" data-slide="${i}">
-      <div class="slide-icon">${p.image ? `<img src="${p.image}" alt="${p.name}" loading="lazy">` : CATEGORY_ICON[p.category]}</div>
-      <div class="slide-info">
+    <div class="slide${i === 0 ? " is-active" : ""}" data-slide="${i}" data-product-id="${p.id}" role="button" tabindex="0" aria-label="View ${p.name}">
+      ${p.image
+        ? `<img class="slide-photo" src="${p.image}" alt="${p.name}" loading="lazy">`
+        : `<div class="slide-photo-fallback">${CATEGORY_ICON[p.category]}</div>`}
+      <div class="slide-caption">
         <p class="slide-eyebrow">${CATEGORY_LABEL[p.category]}</p>
         <h3 class="slide-name">${p.name}</h3>
         <p class="slide-price mono">Rs ${p.price.toLocaleString()}</p>
@@ -661,6 +667,17 @@ function renderSlideshow() {
 
   slideDots.querySelectorAll("[data-dot]").forEach(dot => {
     dot.addEventListener("click", () => goToSlide(Number(dot.dataset.dot)));
+  });
+
+  // Clicking (or Enter/Space on) a slide opens that product's detail modal
+  slideshowTrack.querySelectorAll(".slide").forEach(slide => {
+    slide.addEventListener("click", () => openProduct(slide.dataset.productId));
+    slide.addEventListener("keydown", (e) => {
+      if (e.key === "Enter" || e.key === " ") {
+        e.preventDefault();
+        openProduct(slide.dataset.productId);
+      }
+    });
   });
 
   slideIndex = 0;
