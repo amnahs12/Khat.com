@@ -263,10 +263,8 @@ const PRODUCTS = [
     articleStock: {} },
 
   { id: "j3", name: "Hand Cuff Bracelet", category: "jewelry", price: 300, desc: "Open-cuff style, one-size-fits-most.", tag: null,
+     image: "imageshc/hc3-main.webp"
     
-    media: [
-      { type: "image", src: "imageshc/hc3-main.webp" }
-    ],
     variantType: "article", articleCount: BRACELET_ARTICLE_COUNT,
     articleStock: {"1": 1,
       "2": 3,
