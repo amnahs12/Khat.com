@@ -175,15 +175,7 @@ button { cursor: pointer; }
   padding-top: 14px;
   padding-bottom: 14px;
 }
-.hero-banner {
-  margin-bottom: 0;
-  flex-shrink: 0;
-}
 
-.hero-caption {
-  flex: 1;
-  min-width: 0;
-}
 .logo {
   display: inline-flex;
   align-items: baseline;
@@ -371,7 +363,15 @@ v
   padding-right: 10px;
   border-right: 1px solid rgba(239,237,228,0.4);
 }
+.hero-banner {
+  margin-bottom: 0;
+  flex-shrink: 0;
+}
 
+.hero-caption {
+  flex: 1;
+  min-width: 0;
+}
 @media (max-width: 520px) {
   .hero-ribbon { padding: 5px 14px; gap: 8px; }
   .hero-ribbon span { font-size: 0.56rem; }
