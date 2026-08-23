@@ -269,13 +269,42 @@
             <textarea name="note" rows="2"></textarea>
           </label>
 
-          <p class="form-note">We only accept Advance Payment.You Can Transfer The Total Amount to :
-          <br>JazzCash:03084202707
-          <br>Account Name : Samrina Zia Gul 
-           </p>
-
-          <button type="submit" class="btn btn-primary btn-full">Place order</button>
+          <button type="submit" class="btn btn-primary btn-full">Continue to payment</button>
         </form>
+      </div>
+    </div>
+
+    <!-- Step 2: payment instructions -->
+    <div id="checkoutPayment" hidden>
+      <div class="modal-head">
+        <h2>Payment</h2>
+        <button class="icon-btn" id="paymentCloseBtn" aria-label="Close checkout">
+          <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M5 5l14 14M19 5L5 19"/></svg>
+        </button>
+      </div>
+
+      <div class="modal-body">
+        <div class="order-total-row">
+          <span>Total due</span>
+          <span id="paymentTotal" class="mono">Rs 0</span>
+        </div>
+
+        <p class="payment-note">We only accept Advance Payment. You Can Transfer The Total Amount to:
+          <br>JazzCash: <strong>03084202707</strong>
+          <br>Account Name: <strong>Samrina Zia Gul</strong>
+        </p>
+
+        <p class="payment-note">Send the payment receipt/screenshot to our Instagram messages —
+          <a href="https://www.instagram.com/khatt.inc/" target="_blank" rel="noopener noreferrer">@khatt.inc</a>.
+        </p>
+
+        <label class="payment-ack">
+          <input type="checkbox" id="paymentAckCheckbox">
+          <span>I understand my order will only be dispatched after payment is received.</span>
+        </label>
+
+        <button type="button" class="btn btn-primary btn-full" id="paymentSentBtn" disabled>Confirm order</button>
+        <button type="button" class="btn btn-secondary btn-full" id="paymentBackBtn">Back to details</button>
       </div>
     </div>
 
