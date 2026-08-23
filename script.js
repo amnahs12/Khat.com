@@ -43,8 +43,12 @@
 
 /* RING SIZES + ARTICLE COUNTS — shared by every ring / jewelry product
    below. Change RING_ARTICLE_COUNT or BRACELET_ARTICLE_COUNT here to add
-   or remove article-number options everywhere at once; change RING_SIZES
-   to add/remove ring sizes everywhere at once. */
+   or remove article-number options everywhere at once.
+   RING_SIZES is currently unused (both rings are article-only, no size
+   selector) — it's still here, along with the underlying "ring" variant
+   type further down, in case you ever want a size dropdown back on a
+   ring product; just set that product's variantType to "ring" and give
+   it "sizes: RING_SIZES" again. */
 const RING_SIZES = ["15.5", "16", "16.5", "17", "17.5", "18", "19/19.5"];
 const RING_ARTICLE_COUNT = 25;     // change this one number for every ring product
 const BRACELET_ARTICLE_COUNT = 10; // change this one number for every other jewelry product
@@ -275,10 +279,11 @@ const PRODUCTS = [
       { type: "image", src: "images/j4-side.jpg" },
       { type: "video", src: "images/j4-video.mp4" }
     ],
-    variantType: "ring", sizes: RING_SIZES, articleCount: RING_ARTICLE_COUNT,
-    // Example: Size 17/Article 3 has 2 pieces, Size 18/Article 8 has 9.
-    // Every other size+article combo stays at the default of 1.
-    sizeArticleStock: { "17__3": 2, "18__8": 9 } },
+    // No size selector — article number only, same as the bracelets.
+    variantType: "article", articleCount: RING_ARTICLE_COUNT,
+    // Example: Article 3 has 2 pieces, Article 8 has 9 pieces. Every other
+    // article number stays at the default of 1.
+    articleStock: { "3": 2, "8": 9 } },
 
   { id: "j5", name: "Silver Ring", category: "jewelry", price: 3000, desc: "Sterling silver band.", tag: null,
     image: "images/j5-main.jpg",
@@ -287,8 +292,8 @@ const PRODUCTS = [
       { type: "image", src: "images/j5-side.jpg" },
       { type: "video", src: "images/j5-video.mp4" }
     ],
-    variantType: "ring", sizes: RING_SIZES, articleCount: RING_ARTICLE_COUNT,
-    sizeArticleStock: {} },
+    variantType: "article", articleCount: RING_ARTICLE_COUNT,
+    articleStock: {} },
 
   /* NECKLACES — same "jewelry" category as the bracelets/rings above
      (shows up under the same Jewelry filter pill), just a different kind
@@ -481,7 +486,10 @@ const cartDrawer = document.getElementById("cartDrawer");
 const drawerOverlay = document.getElementById("drawerOverlay");
 const checkoutOverlay = document.getElementById("checkoutOverlay");
 const checkoutFormView = document.getElementById("checkoutForm");
+const checkoutPaymentView = document.getElementById("checkoutPayment");
 const checkoutConfirmView = document.getElementById("checkoutConfirm");
+const paymentAckCheckbox = document.getElementById("paymentAckCheckbox");
+const paymentSentBtn = document.getElementById("paymentSentBtn");
 const orderSummary = document.getElementById("orderSummary");
 const orderSubtotalEl = document.getElementById("orderSubtotal");
 const orderDeliveryEl = document.getElementById("orderDelivery");
@@ -1243,7 +1251,10 @@ function openCheckout() {
   orderTotal.textContent = `Rs ${cartTotal().toLocaleString()}`;
 
   checkoutFormView.hidden = false;
+  checkoutPaymentView.hidden = true;
   checkoutConfirmView.hidden = true;
+  paymentAckCheckbox.checked = false;
+  paymentSentBtn.disabled = true;
   checkoutOverlay.classList.add("is-open");
   closeCart();
 }
@@ -1256,11 +1267,34 @@ checkoutBtn.addEventListener("click", openCheckout);
 document.getElementById("checkoutCloseBtn").addEventListener("click", closeCheckout);
 checkoutOverlay.addEventListener("click", (e) => { if (e.target === checkoutOverlay) closeCheckout(); });
 
-detailsForm.addEventListener("submit", async (e) => {
+detailsForm.addEventListener("submit", (e) => {
   e.preventDefault();
+  if (!detailsForm.reportValidity()) return;
 
-  const submitBtn = detailsForm.querySelector('button[type="submit"]');
-  if (submitBtn) { submitBtn.disabled = true; submitBtn.textContent = "Placing order…"; }
+  // Shipping details are valid — move to the payment step. Nothing is
+  // submitted or claimed permanently yet; that only happens once they
+  // tick the box confirming they understand the order only ships after
+  // payment is received, and click Confirm order.
+  document.getElementById("paymentTotal").textContent = `Rs ${cartTotal().toLocaleString()}`;
+  checkoutFormView.hidden = true;
+  checkoutPaymentView.hidden = false;
+});
+
+document.getElementById("paymentBackBtn").addEventListener("click", () => {
+  checkoutPaymentView.hidden = true;
+  checkoutFormView.hidden = false;
+});
+
+document.getElementById("paymentCloseBtn").addEventListener("click", closeCheckout);
+
+paymentAckCheckbox.addEventListener("change", () => {
+  paymentSentBtn.disabled = !paymentAckCheckbox.checked;
+});
+
+paymentSentBtn.addEventListener("click", async (e) => {
+  const confirmBtn = e.currentTarget;
+  confirmBtn.disabled = true;
+  confirmBtn.textContent = "Confirming…";
 
   const data = new FormData(detailsForm);
 
@@ -1324,7 +1358,7 @@ detailsForm.addEventListener("submit", async (e) => {
   document.getElementById("confirmOrderId").textContent = orderId;
   document.getElementById("confirmEmail").textContent = email;
 
-  checkoutFormView.hidden = true;
+  checkoutPaymentView.hidden = true;
   checkoutConfirmView.hidden = false;
 
   cart = {};
@@ -1332,7 +1366,8 @@ detailsForm.addEventListener("submit", async (e) => {
   renderCart();
   renderProducts();
   detailsForm.reset();
-  if (submitBtn) { submitBtn.disabled = false; submitBtn.textContent = "Place order"; }
+  confirmBtn.disabled = false;
+  confirmBtn.textContent = "Confirm order";
 });
 
 document.getElementById("confirmCloseBtn").addEventListener("click", closeCheckout);
