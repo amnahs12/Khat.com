@@ -21,7 +21,6 @@
 </style>
 </head>
 <body>
-
 <h1>khatt — restore an item</h1>
 <p class="hint">
   Use this when a thrift or ceramics item shows "Sold" but the sale fell
@@ -30,28 +29,21 @@
   one-of-a-kind items (thrift &amp; ceramics); crochet / stickers / jewelry
   stock is edited directly in <code>script.js</code> instead.
 </p>
-
 <label for="secret">Admin password</label>
 <input type="password" id="secret" placeholder="Paste your ADMIN_SECRET">
-
 <div id="list">Loading current claims…</div>
-
 <label for="manualId" style="margin-top:28px;">Or restore by ID directly</label>
 <input type="text" id="manualId" placeholder="e.g. t4">
 <button id="manualBtn">Restore this ID</button>
-
 <p class="msg" id="msg"></p>
-
 <script>
 const listEl = document.getElementById("list");
 const msgEl = document.getElementById("msg");
 const secretEl = document.getElementById("secret");
-
 function showMsg(text, ok) {
   msgEl.textContent = text;
   msgEl.className = "msg " + (ok ? "ok" : "err");
 }
-
 async function loadClaims() {
   try {
     const res = await fetch("/.netlify/functions/claimed-items");
@@ -64,20 +56,22 @@ async function loadClaims() {
     listEl.innerHTML = claimed.map(c => `
       <div class="row">
         <span><span class="id">${c.id}</span><span class="status">${c.status}</span></span>
-        <button data-restore="${c.id}" ${c.status !== "sold" ? "disabled title=\\"only sold items need restoring — reservations expire on their own\\"" : ""}>Restore</button>
+        <button data-restore="${c.id}" ${c.status !== "sold" ? "disabled title='only sold items need restoring — reservations expire on their own'" : ""}>Restore</button>
       </div>
     `).join("");
     listEl.querySelectorAll("[data-restore]").forEach(btn => {
-      btn.addEventListener("click", () => restore(btn.dataset.restore));
+      btn.addEventListener("click", () => restore(btn.dataset.restore, btn));
     });
   } catch (err) {
     listEl.textContent = "Could not load current claims.";
   }
 }
-
-async function restore(id) {
+async function restore(id, btn) {
   const secret = secretEl.value.trim();
   if (!secret) { showMsg("Enter the admin password first.", false); return; }
+
+  if (btn) { btn.disabled = true; btn.textContent = "Restoring…"; }
+
   try {
     const res = await fetch("/.netlify/functions/restore-item", {
       method: "POST",
@@ -90,20 +84,19 @@ async function restore(id) {
       loadClaims();
     } else {
       showMsg(`Failed: ${data.reason || "unknown error"}`, false);
+      if (btn) { btn.disabled = false; btn.textContent = "Restore"; }
     }
   } catch (err) {
     showMsg("Network error — try again.", false);
+    if (btn) { btn.disabled = false; btn.textContent = "Restore"; }
   }
 }
-
 document.getElementById("manualBtn").addEventListener("click", () => {
   const id = document.getElementById("manualId").value.trim();
   if (!id) { showMsg("Type an item ID first.", false); return; }
   restore(id);
 });
-
 loadClaims();
 </script>
-
 </body>
 </html>
