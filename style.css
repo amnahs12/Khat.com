@@ -235,7 +235,7 @@ button { cursor: pointer; }
    featured pieces, sitting above the title / eyebrow / breadcrumb line.
    ========================================================================== */
 .hero { padding: 34px 0 40px; }
-v
+
 .hero-banner {
   position: relative;
   width: min(340px, 100%);
@@ -315,7 +315,24 @@ v
 }
 .slide-dot.is-active { background: var(--oxblood-light); width: 14px; border-radius: 3px; transition: width var(--dur) ease; }
 
-.hero-caption h1 { font-size: 1.6rem; margin: 0 0 12px; max-width: 20ch; }
+/* Title / eyebrow / breadcrumb — all on one line, wrapping on narrow screens */
+.hero-line {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 10px 16px;
+  margin: 0 0 12px;
+}
+.hero-line h1 {
+  margin: 0;
+  font-size: 1.4rem;
+  max-width: 20ch;
+}
+.hero-line .eyebrow,
+.hero-line .hero-breadcrumb {
+  margin: 0;
+}
+
 .eyebrow {
   display: inline-block;
   font-family: var(--font-mono);
@@ -375,7 +392,8 @@ v
 @media (max-width: 520px) {
   .hero-ribbon { padding: 5px 14px; gap: 8px; }
   .hero-ribbon span { font-size: 0.56rem; }
-   
+}
+
 /* ==========================================================================
    Shop controls
    ========================================================================== */
@@ -757,7 +775,7 @@ v
 @media (max-width: 520px) {
   .wrap { padding: 0 16px; }
   .hero-banner { width: 100%; height: 170px; }
-  .hero-caption h1 { font-size: 1.35rem; }
+  .hero-line h1 { font-size: 1.15rem; }
   .controls { flex-direction: column; align-items: stretch; }
   .field-row { grid-template-columns: 1fr; }
   .cart-drawer { width: 100%; }
