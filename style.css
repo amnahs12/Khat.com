@@ -234,165 +234,125 @@ button { cursor: pointer; }
    contained to the page width (not full-bleed), that cycles through
    featured pieces, sitting above the title / eyebrow / breadcrumb line.
    ========================================================================== */
-.hero { padding: 34px 0 40px; }
+.hero { padding: 40px 0 48px; }
+.hero-inner {
+  display: grid;
+  grid-template-columns: 220px 1fr;
+  gap: 32px;
+  align-items: center;
+}
+.eyebrow {
+  font-family: var(--font-mono);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  font-size: 0.7rem;
+  color: var(--parchment-deep);
+  margin-bottom: 8px;
+}
+.hero-caption h1 {
+  font-size: 1.5rem;
+  margin: 0;
+}
 
-.hero-banner {
+.slideshow {
   position: relative;
-  width: min(340px, 100%);
-  height: 200px;
+  height: 220px;
+  border-radius: var(--radius);
   overflow: hidden;
   background: var(--bark);
   border: 1px solid var(--line);
-  border-radius: var(--radius);
-  box-shadow: var(--shadow-md);
-  margin-bottom: 26px;
 }
-.slideshow-track { position: relative; width: 100%; height: 100%; }
+.slideshow-track {
+  position: relative;
+  width: 100%;
+  height: 100%;
+}
 .slide {
   position: absolute;
   inset: 0;
+  display: flex;
+  align-items: center;
+  gap: 24px;
+  padding: 0 28px;
   opacity: 0;
-  transform: scale(1.02);
-  transition: opacity 0.6s ease, transform 0.6s ease;
+  transform: translateX(12px);
+  transition: opacity 0.5s ease, transform 0.5s ease;
   pointer-events: none;
-  cursor: pointer;
 }
-.slide.is-active { opacity: 1; transform: scale(1); pointer-events: auto; }
-.slide-photo { width: 100%; height: 100%; object-fit: cover; display: block; }
-.slide-photo-fallback { display: flex; align-items: center; justify-content: center; color: var(--parchment); background: var(--bark); width: 100%; height: 100%; }
-.slide-photo-fallback svg { width: 30%; height: 30%; opacity: 0.7; }
-.slide-caption {
-  position: absolute;
-  left: 0; right: 0; bottom: 0;
-  padding: 30px 20px 16px;
-  background: linear-gradient(180deg, rgba(16,22,29,0) 0%, rgba(16,22,29,0.75) 75%, rgba(16,22,29,0.9) 100%);
+.slide.is-active {
+  opacity: 1;
+  transform: translateX(0);
+  pointer-events: auto;
 }
+.slide-icon {
+  flex-shrink: 0;
+  width: 96px;
+  height: 96px;
+  border-radius: var(--radius-sm);
+  background: var(--navy);
+  border: 1px solid var(--line);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--parchment);
+}
+.slide-icon img { width: 100%; height: 100%; object-fit: cover; border-radius: var(--radius-sm); }
+.slide-info { min-width: 0; }
 .slide-eyebrow {
   font-family: var(--font-mono);
-  font-size: 0.6rem;
+  font-size: 0.68rem;
   text-transform: uppercase;
-  letter-spacing: 0.08em;
+  letter-spacing: 0.06em;
   color: var(--parchment-deep);
   margin-bottom: 4px;
 }
-.slide-name { font-family: var(--font-display); font-size: 1rem; color: var(--parchment-pale); margin: 0 0 2px; }
-.slide-price { font-family: var(--font-mono); color: var(--oxblood-light); font-size: 0.82rem; }
+.slide-name {
+  font-family: var(--font-display);
+  font-size: 1.2rem;
+  color: var(--parchment-pale);
+  margin: 0 0 4px;
+}
+.slide-price {
+  font-family: var(--font-mono);
+  color: var(--oxblood-light);
+  font-size: 0.95rem;
+}
 
 .slide-nav {
   position: absolute;
   top: 50%;
   transform: translateY(-50%);
-  background: rgba(16,22,29,0.55);
-  border: 1px solid rgba(239,237,228,0.25);
-  color: var(--parchment-pale);
-  width: 24px;
-  height: 24px;
+  background: rgba(13,19,41,0.7);
+  border: 1px solid var(--line);
+  color: var(--parchment);
+  width: 34px;
+  height: 34px;
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
-  z-index: 2;
 }
 .slide-nav:hover { background: var(--oxblood); border-color: var(--oxblood); }
-.slide-prev { left: 8px; }
-.slide-next { right: 8px; }
+.slide-prev { left: 12px; }
+.slide-next { right: 12px; }
 
 .slide-dots {
   position: absolute;
-  bottom: 8px;
-  right: 12px;
+  bottom: 12px;
+  left: 50%;
+  transform: translateX(-50%);
   display: flex;
-  gap: 5px;
-  z-index: 2;
+  gap: 6px;
 }
 .slide-dot {
-  width: 5px;
-  height: 5px;
+  width: 6px;
+  height: 6px;
   border-radius: 50%;
-  background: rgba(239,237,228,0.35);
+  background: var(--slate-light);
   border: none;
   padding: 0;
 }
-.slide-dot.is-active { background: var(--oxblood-light); width: 14px; border-radius: 3px; transition: width var(--dur) ease; }
-
-/* Title / eyebrow / breadcrumb — all on one line, wrapping on narrow screens */
-.hero-line {
-  display: flex;
-  align-items: center;
-  flex-wrap: wrap;
-  gap: 10px 16px;
-  margin: 0 0 12px;
-}
-.hero-line h1 {
-  margin: 0;
-  font-size: 1.4rem;
-  max-width: 20ch;
-}
-.hero-line .eyebrow,
-.hero-line .hero-breadcrumb {
-  margin: 0;
-}
-
-.eyebrow {
-  display: inline-block;
-  font-family: var(--font-mono);
-  text-transform: uppercase;
-  letter-spacing: 0.08em;
-  font-size: 0.7rem;
-  color: var(--parchment-pale);
-  background: var(--slate);
-  padding: 5px 10px;
-  border-radius: var(--radius-sm);
-  margin: 0;
-}
-.hero-breadcrumb {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  font-family: var(--font-mono);
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-  font-size: 0.75rem;
-  color: var(--parchment-deep);
-  margin: 16px 0 0;
-}
-.breadcrumb-bar { width: 3px; align-self: stretch; background: var(--slate-light); border-radius: 2px; flex-shrink: 0; }
-.breadcrumb-sep { color: var(--slate-light); }
-.hero-ribbon {
-  display: inline-flex;
-  gap: 10px;
-  align-items: center;
-  background: var(--oxblood);
-  color: var(--parchment-pale);
-  padding: 6px 18px;
-  margin-bottom: 14px;
-  clip-path: polygon(12px 0, 100% 0, 100% 100%, 12px 100%, 0 50%);
-  box-shadow: var(--shadow-sm);
-}
-.hero-ribbon span {
-  font-family: var(--font-mono);
-  text-transform: uppercase;
-  letter-spacing: 0.06em;
-  font-size: 0.62rem;
-  white-space: nowrap;
-}
-.hero-ribbon span:first-child {
-  padding-right: 10px;
-  border-right: 1px solid rgba(239,237,228,0.4);
-}
-.hero-banner {
-  margin-bottom: 0;
-  flex-shrink: 0;
-}
-
-.hero-caption {
-  flex: 1;
-  min-width: 0;
-}
-@media (max-width: 520px) {
-  .hero-ribbon { padding: 5px 14px; gap: 8px; }
-  .hero-ribbon span { font-size: 0.56rem; }
-}
+.slide-dot.is-active { background: var(--oxblood-light); width: 18px; border-radius: 3px; transition: width var(--dur) ease; }
 
 /* ==========================================================================
    Shop controls
