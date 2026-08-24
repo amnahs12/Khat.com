@@ -636,10 +636,12 @@ function productCardHTML(p) {
       ? (isRingVariant(p) ? "Choose size & article" : "Choose article")
       : (maxedOut ? "In cart" : "Add to cart");
 
+  const thumb = getThumbnail(p);
+
   return `
     <article class="card" data-id="${p.id}" tabindex="0" role="button" aria-label="View ${p.name}">
       <div class="card-photo">
-        ${p.image ? `<img src="${p.image}" alt="${p.name}" loading="lazy">` : CATEGORY_ICON[p.category]}
+        ${thumb ? `<img src="${thumb}" alt="${p.name}" loading="lazy">` : CATEGORY_ICON[p.category]}
         <span class="card-badge">${CATEGORY_LABEL[p.category]}</span>
         ${badgeTag}
       </div>
@@ -681,12 +683,20 @@ document.getElementById("sortSelect").addEventListener("change", (e) => {
    scroll-snapped, and paged with the prev/next arrows or the dots below
    (one dot per page of 3, not per individual card). Clicking a card
    opens that product's detail modal, same as the grid.
+
+   SIZE CAP — the .slideshow frame itself has a fixed max-width in CSS
+   (see style.css), so the whole carousel stays a small, consistent size
+   on every screen instead of stretching to fill wide viewports. On top
+   of that, MAX_SLIDE_CARD_WIDTH below clamps each individual card so it
+   never grows past a small thumbnail size even if the frame is wider
+   than expected.
    ========================================================================== */
 const slideshowTrack = document.getElementById("slideshowTrack");
 const slideDots = document.getElementById("slideDots");
 let slidePage = 0;
 let slidePageCount = 1;
 const SLIDES_PER_VIEW = 3; // fixed: always show exactly 3 cards per page
+const MAX_SLIDE_CARD_WIDTH = 110; // px — keeps each thumbnail small on every screen
 let slidePerView = SLIDES_PER_VIEW;
 let slideTimer = null;
 
@@ -698,15 +708,18 @@ function getFeatured() {
 function renderSlideshow() {
   const items = getFeatured();
 
-  slideshowTrack.innerHTML = items.map(p => `
+  slideshowTrack.innerHTML = items.map(p => {
+    const thumb = getThumbnail(p);
+    return `
     <button class="slide-card" type="button" data-product-id="${p.id}" aria-label="View ${p.name}">
       <div class="slide-card-photo">
-        ${p.image ? `<img src="${p.image}" alt="${p.name}" loading="lazy">` : CATEGORY_ICON[p.category]}
+        ${thumb ? `<img src="${thumb}" alt="${p.name}" loading="lazy">` : CATEGORY_ICON[p.category]}
       </div>
       <p class="slide-card-name">${p.name}</p>
       <p class="slide-card-price mono">Rs ${p.price.toLocaleString()}</p>
     </button>
-  `).join("");
+  `;
+  }).join("");
 
   slideshowTrack.querySelectorAll(".slide-card").forEach(card => {
     card.addEventListener("click", () => openProduct(card.dataset.productId));
@@ -729,9 +742,12 @@ function renderSlideshow() {
    frame width, on any screen — then works out how many "pages" that
    makes. Setting an inline pixel width on each card (rather than relying
    on a CSS class) guarantees the count stays exactly 3 regardless of
-   viewport size or any stylesheet changes elsewhere. Re-run on load and
-   on resize (debounced), and re-snaps the scroll position to the current
-   page afterwards so the layout doesn't jump. */
+   viewport size or any stylesheet changes elsewhere. The result is also
+   clamped to MAX_SLIDE_CARD_WIDTH so the carousel never blows up into a
+   large slideshow on wide screens — the .slideshow frame is already
+   capped by max-width in CSS, so this is just an extra safety net. Re-run
+   on load and on resize (debounced), and re-snaps the scroll position to
+   the current page afterwards so the layout doesn't jump. */
 function recalcSlidePaging() {
   const cards = slideshowTrack.querySelectorAll(".slide-card");
   if (!cards.length) { slidePageCount = 1; renderSlideDots(); return; }
@@ -741,7 +757,8 @@ function recalcSlidePaging() {
   const trackStyles = getComputedStyle(slideshowTrack);
   const gap = parseFloat(trackStyles.columnGap || trackStyles.gap || "14") || 14;
   const containerWidth = slideshowTrack.clientWidth;
-  const cardWidth = Math.max(60, (containerWidth - gap * (slidePerView - 1)) / slidePerView);
+  const rawCardWidth = (containerWidth - gap * (slidePerView - 1)) / slidePerView;
+  const cardWidth = Math.min(MAX_SLIDE_CARD_WIDTH, Math.max(60, rawCardWidth));
 
   cards.forEach(c => {
     c.style.width = `${cardWidth}px`;
@@ -809,6 +826,23 @@ document.getElementById("slideNext").addEventListener("click", () => { goToSlide
 const slideshowEl = document.getElementById("slideshow");
 slideshowEl.addEventListener("mouseenter", () => clearInterval(slideTimer));
 slideshowEl.addEventListener("mouseleave", startSlideTimer);
+
+/* ==========================================================================
+   THUMBNAIL HELPER — a product's thumbnail (used on grid cards, the hero
+   slideshow, and cart rows) is its "image" field if set, otherwise the
+   first image in its "media" gallery, otherwise null (falls back to the
+   category icon). This is what makes products that only define "media"
+   (no top-level "image") — like the hand cuff bracelet and gold ring —
+   still show a real photo instead of the category icon.
+   ========================================================================== */
+function getThumbnail(p) {
+  if (p.image) return p.image;
+  if (p.media && p.media.length) {
+    const firstImage = p.media.find(m => m.type === "image");
+    if (firstImage) return firstImage.src;
+  }
+  return null;
+}
 
 /* ==========================================================================
    PRODUCT DETAIL MODAL — opened by clicking a card. Shows a manual
@@ -1295,9 +1329,11 @@ function renderCart() {
   cartEmptyMsg.hidden = lines.length !== 0;
   checkoutBtn.disabled = lines.length === 0;
 
-  cartItemsEl.innerHTML = lines.map(line => `
+  cartItemsEl.innerHTML = lines.map(line => {
+    const thumb = getThumbnail(line.product);
+    return `
     <div class="cart-item" data-line="${line.key}">
-      <div class="cart-item-photo">${line.product.image ? `<img src="${line.product.image}" alt="${line.product.name}" loading="lazy">` : CATEGORY_ICON[line.product.category]}</div>
+      <div class="cart-item-photo">${thumb ? `<img src="${thumb}" alt="${line.product.name}" loading="lazy">` : CATEGORY_ICON[line.product.category]}</div>
       <div class="cart-item-info">
         <p class="cart-item-name">${line.product.name}${variantLabelHTML(line.variant)}</p>
         <p class="cart-item-price mono">Rs ${line.product.price.toLocaleString()}</p>
@@ -1313,7 +1349,8 @@ function renderCart() {
         </div>
       </div>
     </div>
-  `).join("");
+  `;
+  }).join("");
 
   cartSubtotalEl.textContent = `Rs ${cartSubtotal().toLocaleString()}`;
   if (cartDeliveryEl) cartDeliveryEl.textContent = lines.length ? `Rs ${DELIVERY_CHARGE.toLocaleString()}` : `Rs 0`;
