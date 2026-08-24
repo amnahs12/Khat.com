@@ -278,8 +278,8 @@ const PRODUCTS = [
   { id: "j4", name: "Gold Ring", category: "jewelry", price: 125, desc: "Shein rings.Please Check the size and article number before ordering", tag: null, featured: true,
     
     media: [
-      { type: "image", src: "imagesjrg2/j4(1).webp" },
-      { type: "image", src: "imagesjrg2/j4(2).webp" }
+      { type: "image", src: "imagesjrg2/j41.webp" },
+      { type: "image", src: "imagesjrg2/j42.webp" }
     ],
     // No size selector — article number only, same as the bracelets.
     // 23 articles total. Change any single number below to set that
