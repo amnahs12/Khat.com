@@ -230,11 +230,14 @@ button { cursor: pointer; }
 }
 
 /* ==========================================================================
-   Hero — small square-thumbnail product carousel. Exactly 3 cards are
-   visible at a time on any screen — script.js measures the frame and
-   sets each card's pixel width directly (inline style), so this CSS just
-   needs to lay them out in a row and NOT force a fixed width (that's
-   what caused stretching / showing more than 3 before).
+   Hero — small square-thumbnail product carousel. The whole .slideshow
+   frame is capped at a fixed max-width (see below) so it stays a small,
+   consistent size on every screen instead of stretching to fill wide
+   viewports — that's what made it look "too big" / oddly magnified on
+   larger screens before. script.js still measures the frame and sets
+   each card's pixel width directly (inline style), and additionally
+   clamps that width to a small maximum, so exactly 3 small thumbnails
+   always fit, on any device.
    ========================================================================== */
 .hero { padding: 40px 0 48px; }
 .hero-inner {
@@ -256,18 +259,23 @@ button { cursor: pointer; }
   margin: 0;
 }
 
-/* ---- carousel frame ---- */
+/* ---- carousel frame ----
+   max-width keeps the whole carousel small and identical in size across
+   phones, tablets, and wide desktop screens — it never grows past this,
+   it just centers/shrinks within whatever space it's given. */
 .slideshow {
   position: relative;
   background: var(--bark);
   border: 1px solid var(--line);
   border-radius: var(--radius);
-  padding: 18px 46px 32px;
+  padding: 16px 40px 28px;
+  max-width: 380px;
+  width: 100%;
 }
 
 .slideshow-track {
   display: flex;
-  gap: 14px;
+  gap: 12px;
   overflow-x: auto;
   scroll-snap-type: x mandatory;
   scroll-behavior: smooth;
@@ -278,9 +286,9 @@ button { cursor: pointer; }
 
 /* ---- one small square-thumbnail card ----
    No fixed width here on purpose: script.js sets each card's width
-   inline so exactly 3 fit the frame on any screen size. flex: 0 0 auto
-   just tells flexbox to respect that inline width instead of growing or
-   shrinking the card. */
+   inline (clamped to a small max) so exactly 3 fit the frame, staying
+   small on any screen size. flex: 0 0 auto just tells flexbox to
+   respect that inline width instead of growing or shrinking the card. */
 .slide-card {
   flex: 0 0 auto;
   scroll-snap-align: start;
@@ -317,7 +325,7 @@ button { cursor: pointer; }
 
 .slide-card-name {
   font-family: var(--font-mono);
-  font-size: 0.72rem;
+  font-size: 0.68rem;
   color: var(--parchment-pale);
   margin: 8px 0 2px;
   line-height: 1.3;
@@ -328,7 +336,7 @@ button { cursor: pointer; }
 }
 .slide-card-price {
   font-family: var(--font-mono);
-  font-size: 0.7rem;
+  font-size: 0.66rem;
   color: var(--oxblood-light);
 }
 
@@ -340,8 +348,8 @@ button { cursor: pointer; }
   background: rgba(13,19,41,0.7);
   border: 1px solid var(--line);
   color: var(--parchment);
-  width: 34px;
-  height: 34px;
+  width: 30px;
+  height: 30px;
   border-radius: 50%;
   display: flex;
   align-items: center;
@@ -349,13 +357,13 @@ button { cursor: pointer; }
   z-index: 2;
 }
 .slide-nav:hover { background: var(--oxblood); border-color: var(--oxblood); }
-.slide-prev { left: 8px; }
-.slide-next { right: 8px; }
+.slide-prev { left: 6px; }
+.slide-next { right: 6px; }
 
 /* ---- dots ---- */
 .slide-dots {
   position: absolute;
-  bottom: 10px;
+  bottom: 8px;
   left: 50%;
   transform: translateX(-50%);
   display: flex;
@@ -752,7 +760,7 @@ button { cursor: pointer; }
 
 @media (max-width: 520px) {
   .wrap { padding: 0 16px; }
-  .slideshow { padding: 14px 40px 26px; }
+  .slideshow { padding: 14px 34px 24px; max-width: 320px; }
   .controls { flex-direction: column; align-items: stretch; }
   .field-row { grid-template-columns: 1fr; }
   .cart-drawer { width: 100%; }
