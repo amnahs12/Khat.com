@@ -319,7 +319,7 @@ const PRODUCTS = [
       "23": 1
     } },
 
-  { id: "j5", name: "Silver Ring", category: "jewelry", price: 125, desc: "Sterling silver band.", tag: null,
+  { id: "j5", name: "Silver Ring", category: "jewelry", price: 125, desc: "Shein rings.Please Check the size and article number before ordering", tag: null,
     image: "images/j5-main.jpg",
     media: [
       { type: "image", src: "jik/silverr 1.webp" },
