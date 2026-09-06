@@ -32,7 +32,7 @@
 
     <nav class="main-nav" aria-label="Main">
       <a href="#shop">Shop</a>
-      
+      <a href="#reviews">Reviews</a>
       <a href="#contact">Contact</a>
     </nav>
 
@@ -108,7 +108,20 @@
     </div>
   </section>
 
-  
+  <!-- ============ REVIEWS ============ -->
+  <section class="reviews" id="reviews">
+    <div class="wrap">
+      <div class="shop-header">
+        <h2 class="section-highlight">What people say</h2>
+        <button class="btn btn-primary" id="writeReviewBtn">Write a review</button>
+      </div>
+
+      <div class="review-grid" id="reviewGrid"></div>
+
+      <p class="empty-state" id="reviewsEmptyState" hidden>No reviews yet — be the first to leave one.</p>
+      <p class="empty-state" id="reviewsLoadError" hidden>Couldn't load reviews right now — try again in a bit.</p>
+    </div>
+  </section>
 
   <!-- ============ CONTACT / FOOTER ============ -->
   <footer class="site-footer" id="contact">
@@ -321,6 +334,54 @@
       </div>
     </div>
 
+  </div>
+</div>
+
+<!-- ============ WRITE A REVIEW MODAL ============ -->
+<div class="modal-overlay" id="reviewOverlay">
+  <div class="modal" role="dialog" aria-modal="true" aria-labelledby="reviewTitle">
+    <div class="modal-head">
+      <h2 id="reviewTitle">Write a review</h2>
+      <button class="icon-btn" id="reviewCloseBtn" aria-label="Close">
+        <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M5 5l14 14M19 5L5 19"/></svg>
+      </button>
+    </div>
+    <div class="modal-body">
+      <form id="reviewForm" novalidate>
+        <label class="field">
+          <span>Your name</span>
+          <input type="text" id="reviewName" maxlength="60" required>
+        </label>
+
+        <div class="field">
+          <span>Rating</span>
+          <div class="star-picker" id="starPicker" role="radiogroup" aria-label="Rating">
+            <button type="button" class="star-btn" data-star="1" aria-label="1 star">★</button>
+            <button type="button" class="star-btn" data-star="2" aria-label="2 stars">★</button>
+            <button type="button" class="star-btn" data-star="3" aria-label="3 stars">★</button>
+            <button type="button" class="star-btn" data-star="4" aria-label="4 stars">★</button>
+            <button type="button" class="star-btn" data-star="5" aria-label="5 stars">★</button>
+          </div>
+          <input type="hidden" id="reviewRating" value="0">
+        </div>
+
+        <label class="field">
+          <span>Your review</span>
+          <textarea id="reviewText" rows="4" maxlength="1000" required></textarea>
+        </label>
+
+        <label class="field">
+          <span>Add photos (optional, up to 3)</span>
+          <input type="file" id="reviewImages" accept="image/*" multiple>
+        </label>
+
+        <div class="review-image-preview" id="reviewImagePreview"></div>
+
+        <p class="form-note" id="reviewFormError" hidden></p>
+
+        <button type="submit" class="btn btn-primary btn-full" id="reviewSubmitBtn">Post review</button>
+      </form>
+    </div>
   </div>
 </div>
 
