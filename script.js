@@ -395,17 +395,17 @@ const PAUSABLE_CATEGORIES = ["crochet", "stickers"];
 const PAUSABLE_IDS = ["j2", "n1", "n2"]; // Silver Bracelet, Gold Chain Necklace, Silver Pendant Necklace
 
 const PAUSED_PRODUCTS = [
-  // "r1",  // Chunky Wool Beanie
-  // "r2",  // Granny Square Tote
-  // "r3",  // Market Produce Bag
-  // "r4",  // Amigurumi Frog
-  // "s1",  // Frog on a Mushroom
-  // "s2",  // Mend It Yourself
-  // "s3",  // Little Ceramic Pot
-  // "s4",  // Sticker Pack — Set of 5
-  // "j2",  // Silver Bracelet
-  // "n1",  // Gold Chain Necklace
-  // "n2",  // Silver Pendant Necklace
+  "r1",  // Chunky Wool Beanie
+  "r2",  // Granny Square Tote
+  "r3",  // Market Produce Bag
+  "r4",  // Amigurumi Frog
+  "s1",  // Frog on a Mushroom
+  "s2",  // Mend It Yourself
+  "s3",  // Little Ceramic Pot
+  "s4",  // Sticker Pack — Set of 5
+  "j2",  // Silver Bracelet
+  "n1",  // Gold Chain Necklace
+  "n2",  // Silver Pendant Necklace
 ];
 
 function isPausable(p) {
