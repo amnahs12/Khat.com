@@ -370,6 +370,51 @@ const CATEGORY_LABEL = { ceramics: "Ceramics", crochet: "Crochet", thrift: "Thri
    whenever your delivery cost changes — nothing else needs editing. */
 const DELIVERY_CHARGE = 250;
 
+/* ==========================================================================
+   PAUSED PRODUCTS — take a product out of the shop (because you don't
+   have the stock yet, it needs re-photographing, etc.) WITHOUT deleting
+   or rewriting anything in the PRODUCTS list above. It disappears from
+   the shop grid and the hero slideshow completely. To bring it back,
+   just remove its id from the list below (or comment the line out) —
+   no other code changes needed.
+
+   This only works for products this shop has been set up to allow
+   pausing for: every crochet and stickers product, plus these specific
+   jewelry pieces — Silver Bracelet (j2), Gold Chain Necklace (n1), and
+   Silver Pendant Necklace (n2). See PAUSABLE_CATEGORIES / PAUSABLE_IDS
+   just below if you ever want to allow more products to be paused this
+   way. Adding any other product's id here has no effect.
+
+   Example — to pull the Chunky Wool Beanie until you restock it, add
+   its id below:
+     const PAUSED_PRODUCTS = ["r1"];
+   Then to bring it back, just remove it again:
+     const PAUSED_PRODUCTS = [];
+   ========================================================================== */
+const PAUSABLE_CATEGORIES = ["crochet", "stickers"];
+const PAUSABLE_IDS = ["j2", "n1", "n2"]; // Silver Bracelet, Gold Chain Necklace, Silver Pendant Necklace
+
+const PAUSED_PRODUCTS = [
+  // "r1",  // Chunky Wool Beanie
+  // "r2",  // Granny Square Tote
+  // "r3",  // Market Produce Bag
+  // "r4",  // Amigurumi Frog
+  // "s1",  // Frog on a Mushroom
+  // "s2",  // Mend It Yourself
+  // "s3",  // Little Ceramic Pot
+  // "s4",  // Sticker Pack — Set of 5
+  // "j2",  // Silver Bracelet
+  // "n1",  // Gold Chain Necklace
+  // "n2",  // Silver Pendant Necklace
+];
+
+function isPausable(p) {
+  return PAUSABLE_CATEGORIES.includes(p.category) || PAUSABLE_IDS.includes(p.id);
+}
+function isPaused(p) {
+  return isPausable(p) && PAUSED_PRODUCTS.includes(p.id);
+}
+
 /* Minimal line-art icons (no emoji), one per category — inherits color via currentColor */
 const CATEGORY_ICON = {
   ceramics: `<svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M18 6h12v6c4 4 6 9 6 14 0 9-7 16-12 16s-12-7-12-16c0-5 2-10 6-14V6z" stroke-linejoin="round"/><path d="M18 6h12" stroke-linecap="round"/></svg>`,
@@ -553,6 +598,8 @@ function getVisibleProducts() {
     ? [...PRODUCTS]
     : PRODUCTS.filter(p => p.category === currentFilter);
 
+  list = list.filter(p => !isPaused(p));
+
   switch (currentSort) {
     case "price-asc": list.sort((a, b) => a.price - b.price); break;
     case "price-desc": list.sort((a, b) => b.price - a.price); break;
@@ -701,8 +748,9 @@ let slidePerView = SLIDES_PER_VIEW;
 let slideTimer = null;
 
 function getFeatured() {
-  const featured = PRODUCTS.filter(p => p.featured);
-  return featured.length ? featured : PRODUCTS.slice(0, 8);
+  const featured = PRODUCTS.filter(p => p.featured && !isPaused(p));
+  if (featured.length) return featured;
+  return PRODUCTS.filter(p => !isPaused(p)).slice(0, 8);
 }
 
 function renderSlideshow() {
@@ -1532,6 +1580,212 @@ paymentSentBtn.addEventListener("click", async (e) => {
 document.getElementById("confirmCloseBtn").addEventListener("click", closeCheckout);
 
 /* ==========================================================================
+   REVIEWS — visitors can leave a name, star rating, text, and up to 3
+   photos. Reviews are stored server-side (Netlify Blobs, via
+   netlify/functions/get-reviews.mjs and submit-review.mjs) so every
+   visitor sees the same list, not just their own browser.
+
+   Photos are resized/compressed in the browser before upload (long edge
+   capped, re-encoded as JPEG) so an ordinary phone photo doesn't turn
+   into a multi-megabyte request — see resizeImageFile() below.
+   ========================================================================== */
+const REVIEW_MAX_IMAGES = 3;
+const REVIEW_MAX_DIMENSION = 900; // px, longest edge after resize
+const REVIEW_JPEG_QUALITY = 0.72;
+
+const reviewGrid = document.getElementById("reviewGrid");
+const reviewsEmptyState = document.getElementById("reviewsEmptyState");
+const reviewsLoadError = document.getElementById("reviewsLoadError");
+const reviewOverlay = document.getElementById("reviewOverlay");
+const reviewForm = document.getElementById("reviewForm");
+const reviewNameInput = document.getElementById("reviewName");
+const reviewTextInput = document.getElementById("reviewText");
+const reviewRatingInput = document.getElementById("reviewRating");
+const starPicker = document.getElementById("starPicker");
+const reviewImagesInput = document.getElementById("reviewImages");
+const reviewImagePreview = document.getElementById("reviewImagePreview");
+const reviewFormError = document.getElementById("reviewFormError");
+const reviewSubmitBtn = document.getElementById("reviewSubmitBtn");
+const writeReviewBtn = document.getElementById("writeReviewBtn");
+
+let reviewImageDataUrls = []; // resized/compressed images staged for the current review
+
+function starsHTML(rating) {
+  const full = Math.round(rating);
+  return Array.from({ length: 5 }).map((_, i) => `<span class="review-star${i < full ? " is-filled" : ""}">★</span>`).join("");
+}
+
+function formatReviewDate(iso) {
+  try {
+    return new Date(iso).toLocaleDateString(undefined, { year: "numeric", month: "short", day: "numeric" });
+  } catch {
+    return "";
+  }
+}
+
+function reviewCardHTML(r) {
+  const images = Array.isArray(r.images) ? r.images.slice(0, REVIEW_MAX_IMAGES) : [];
+  return `
+    <article class="review-card">
+      <div class="review-card-head">
+        <span class="review-name">${escapeHTML(r.name || "Anonymous")}</span>
+        <span class="review-stars">${starsHTML(r.rating || 0)}</span>
+      </div>
+      <p class="review-date">${formatReviewDate(r.createdAt)}</p>
+      <p class="review-text">${escapeHTML(r.text || "")}</p>
+      ${images.length ? `
+        <div class="review-photos">
+          ${images.map(src => `<img src="${src}" alt="Photo from ${escapeHTML(r.name || "a reviewer")}'s review" loading="lazy">`).join("")}
+        </div>` : ""}
+    </article>
+  `;
+}
+
+function escapeHTML(str) {
+  const div = document.createElement("div");
+  div.textContent = str;
+  return div.innerHTML;
+}
+
+async function loadReviews() {
+  reviewsLoadError.hidden = true;
+  try {
+    const res = await fetch("/.netlify/functions/get-reviews");
+    if (!res.ok) throw new Error("bad-status");
+    const data = await res.json();
+    const reviews = Array.isArray(data.reviews) ? data.reviews : [];
+    reviewsEmptyState.hidden = reviews.length !== 0;
+    reviewGrid.innerHTML = reviews.map(reviewCardHTML).join("");
+  } catch (err) {
+    console.error("Could not load reviews:", err);
+    reviewGrid.innerHTML = "";
+    reviewsEmptyState.hidden = true;
+    reviewsLoadError.hidden = false;
+  }
+}
+
+/* Resizes + re-encodes an image file in the browser (long edge capped at
+   REVIEW_MAX_DIMENSION, re-saved as JPEG at REVIEW_JPEG_QUALITY) and
+   resolves to a compact base64 data URL ready to send to the server. */
+function resizeImageFile(file) {
+  return new Promise((resolve, reject) => {
+    const img = new Image();
+    const objectUrl = URL.createObjectURL(file);
+    img.onload = () => {
+      URL.revokeObjectURL(objectUrl);
+      let { width, height } = img;
+      if (width > height && width > REVIEW_MAX_DIMENSION) {
+        height = Math.round(height * (REVIEW_MAX_DIMENSION / width));
+        width = REVIEW_MAX_DIMENSION;
+      } else if (height > REVIEW_MAX_DIMENSION) {
+        width = Math.round(width * (REVIEW_MAX_DIMENSION / height));
+        height = REVIEW_MAX_DIMENSION;
+      }
+      const canvas = document.createElement("canvas");
+      canvas.width = width;
+      canvas.height = height;
+      const ctx = canvas.getContext("2d");
+      ctx.drawImage(img, 0, 0, width, height);
+      resolve(canvas.toDataURL("image/jpeg", REVIEW_JPEG_QUALITY));
+    };
+    img.onerror = () => { URL.revokeObjectURL(objectUrl); reject(new Error("image-load-failed")); };
+    img.src = objectUrl;
+  });
+}
+
+function renderReviewImagePreview() {
+  reviewImagePreview.innerHTML = reviewImageDataUrls.map((src, i) => `
+    <div class="review-preview-thumb">
+      <img src="${src}" alt="Selected photo ${i + 1}">
+      <button type="button" class="review-preview-remove" data-remove-img="${i}" aria-label="Remove photo">×</button>
+    </div>
+  `).join("");
+  reviewImagePreview.querySelectorAll("[data-remove-img]").forEach(btn => {
+    btn.addEventListener("click", () => {
+      reviewImageDataUrls.splice(Number(btn.dataset.removeImg), 1);
+      renderReviewImagePreview();
+    });
+  });
+}
+
+reviewImagesInput.addEventListener("change", async () => {
+  const files = Array.from(reviewImagesInput.files || []).slice(0, REVIEW_MAX_IMAGES - reviewImageDataUrls.length);
+  reviewImagesInput.value = "";
+  if (!files.length) return;
+  try {
+    const resized = await Promise.all(files.map(resizeImageFile));
+    reviewImageDataUrls = [...reviewImageDataUrls, ...resized].slice(0, REVIEW_MAX_IMAGES);
+    renderReviewImagePreview();
+  } catch (err) {
+    console.error("Could not process image:", err);
+  }
+});
+
+starPicker.querySelectorAll(".star-btn").forEach(btn => {
+  btn.addEventListener("click", () => {
+    const value = Number(btn.dataset.star);
+    reviewRatingInput.value = String(value);
+    starPicker.querySelectorAll(".star-btn").forEach(b => b.classList.toggle("is-active", Number(b.dataset.star) <= value));
+  });
+});
+
+function openReviewModal() {
+  reviewForm.reset();
+  reviewRatingInput.value = "0";
+  starPicker.querySelectorAll(".star-btn").forEach(b => b.classList.remove("is-active"));
+  reviewImageDataUrls = [];
+  renderReviewImagePreview();
+  reviewFormError.hidden = true;
+  reviewOverlay.classList.add("is-open");
+}
+
+function closeReviewModal() {
+  reviewOverlay.classList.remove("is-open");
+}
+
+writeReviewBtn.addEventListener("click", openReviewModal);
+document.getElementById("reviewCloseBtn").addEventListener("click", closeReviewModal);
+reviewOverlay.addEventListener("click", (e) => { if (e.target === reviewOverlay) closeReviewModal(); });
+
+reviewForm.addEventListener("submit", async (e) => {
+  e.preventDefault();
+  reviewFormError.hidden = true;
+
+  const name = reviewNameInput.value.trim();
+  const text = reviewTextInput.value.trim();
+  const rating = Number(reviewRatingInput.value);
+
+  if (!name || !text || !rating) {
+    reviewFormError.textContent = "Please add your name, a star rating, and a short review.";
+    reviewFormError.hidden = false;
+    return;
+  }
+
+  reviewSubmitBtn.disabled = true;
+  reviewSubmitBtn.textContent = "Posting…";
+
+  try {
+    const res = await fetch("/.netlify/functions/submit-review", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ name, text, rating, images: reviewImageDataUrls }),
+    });
+    const data = await res.json().catch(() => ({}));
+    if (!res.ok || !data.ok) throw new Error(data.reason || "submit-failed");
+
+    closeReviewModal();
+    await loadReviews();
+  } catch (err) {
+    console.error("Could not submit review:", err);
+    reviewFormError.textContent = "Something went wrong posting that — please try again.";
+    reviewFormError.hidden = false;
+  } finally {
+    reviewSubmitBtn.disabled = false;
+    reviewSubmitBtn.textContent = "Post review";
+  }
+});
+
+/* ==========================================================================
    INIT
    ========================================================================== */
 document.getElementById("year").textContent = new Date().getFullYear();
@@ -1540,3 +1794,4 @@ renderCart();
 renderSlideshow();
 fetchClaimedItems();
 setInterval(fetchClaimedItems, 20000); // keep availability in sync across visitors
+loadReviews();
