@@ -240,7 +240,7 @@ const PRODUCTS = [
      in one place. To give ONE specific product a different count than
      the rest, just set that product's own articleCount to a different
      number instead of the shared constant. */
-  { id: "j1", name: "Gold Bracelet", category: "jewelry", price: 3500, desc: "18k gold-plated, adjustable clasp.", tag: null, featured: true,
+  { id: "j1", name: "Gold Bracelet", category: "jewelry", price: 190, desc: "Classic Chain Bracelets , Shein Bracelet, adjustable clasp. ", tag: null, featured: true,
     image: "jik/goldbracelet.webp",
     media: [
       { type: "image", src: "jik/goldbracelet.webp" }
@@ -319,7 +319,7 @@ const PRODUCTS = [
       "23": 1
     } },
 
-  { id: "j5", name: "Silver Ring", category: "jewelry", price: 3000, desc: "Sterling silver band.", tag: null,
+  { id: "j5", name: "Silver Ring", category: "jewelry", price: 125, desc: "Sterling silver band.", tag: null,
     image: "images/j5-main.jpg",
     media: [
       { type: "image", src: "jik/silverr 1.webp" },
