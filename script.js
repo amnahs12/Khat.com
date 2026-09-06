@@ -158,7 +158,7 @@ const PRODUCTS = [
       { type: "image", src: "images/c1.jpg" },
       { type: "image", src: "images2/c1-2.webp" }
     ] },
-  { id: "t4", name: "Wood Embossed Cottage Jar ", category: "thrift", price: 450, desc: "Condition: 10/8 , Dimension: 7.4x3.14", tag: "One of a kind", image: "images/c7.jpg", stock: 1,
+  { id: "t4", name: "Wood Embossed Cottage Box ", category: "thrift", price: 450, desc: "Condition: 10/8 , Dimension: 7.4x3.14", tag: "One of a kind", image: "images/c7.jpg", stock: 1,
     media: [
       { type: "image", src: "images/c7.jpg" },
       { type: "image", src: "images2/c7-2.webp" }
