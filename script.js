@@ -320,7 +320,7 @@ const PRODUCTS = [
     } },
 
   { id: "j5", name: "Silver Ring", category: "jewelry", price: 125, desc: "Shein rings.Please Check the size and article number before ordering", tag: null,
-    image: "images/j5-main.jpg",
+    image: "jik/silverr 1.webp",
     media: [
       { type: "image", src: "jik/silverr 1.webp" },
       { type: "image", src: "jik/silverr 2.webp" },
