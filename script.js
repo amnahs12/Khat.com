@@ -241,16 +241,24 @@ const PRODUCTS = [
      the rest, just set that product's own articleCount to a different
      number instead of the shared constant. */
   { id: "j1", name: "Gold Bracelet", category: "jewelry", price: 3500, desc: "18k gold-plated, adjustable clasp.", tag: null, featured: true,
-    image: "images/j1-main.jpg",
+    image: "jik/goldbracelet.webp",
     media: [
-      { type: "image", src: "images/j1-main.jpg" },
-      { type: "image", src: "images/j1-side.jpg" },
-      { type: "video", src: "images/j1-video.mp4" }
+      { type: "image", src: "jik/goldbracelet.webp" }
+      
+      
     ],
     variantType: "article", articleCount: BRACELET_ARTICLE_COUNT,
     // Example: Article 3 has 2 pieces, Article 8 has 9 pieces. Every other
     // article number (1,2,4,5,6,7,9,10) stays at the default of 1.
-    articleStock: { "3": 2, "8": 9 } },
+    articleStock: { "1": 1,
+      "2": 1,
+      "3": 1,
+      "4": 1,
+      "5": 1,
+      "6": 1 , "7": 1,
+      "8": 3,
+      "9": 1,
+      "10": 1 } },
 
   { id: "j2", name: "Silver Bracelet", category: "jewelry", price: 2800, desc: "Sterling silver, adjustable clasp.", tag: null,
     image: "images/j2-main.jpg",
@@ -314,17 +322,19 @@ const PRODUCTS = [
   { id: "j5", name: "Silver Ring", category: "jewelry", price: 3000, desc: "Sterling silver band.", tag: null,
     image: "images/j5-main.jpg",
     media: [
-      { type: "image", src: "imagesjrs/j5(1).webp" },
-      { type: "image", src: "imagesjrs/j5(2).webp" },
-       { type: "image", src: "imagesjrs/j5(3).webp" },
-      { type: "image", src: "imagesjrs/j5(4).webp" },{ type: "image", src: "imagesjrs/j5(5).webp" },
-       { type: "image", src: "imagesjrs/j5(6).webp" },{ type: "image", src: "imagesjrs/j5(7).webp" }
+      { type: "image", src: "jik/silverr 1.webp" },
+      { type: "image", src: "jik/silverr 2.webp" },
+      { type: "image", src: "jik/silverr 3.webp" },
+      { type: "image", src: "jik/silverr 4.webp" },
+      { type: "image", src: "jik/silverr 5.webp" },
+      { type: "image", src: "jik/silverr 6.webp" },
+       { type: "image", src: "jik/silverr 7.webp" }
       ],
     // 126 articles total. Change any single number below to set that
     // article's exact stock; every entry defaults to 1 (one-of-a-kind).
-    variantType: "article", articleCount: 126,
+    variantType: "article", articleCount: 113,
     articleStock: {
-      "1": 1, "2": 1, "3": 1, "4": 1, "5": 1, "6": 1, "7": 1, "8": 1, "9": 1, "10": 1,
+      "1": 1, "2": 1, "3": 1, "4": 3, "5": 1, "6": 1, "7": 1, "8": 1, "9": 1, "10": 1,
       "11": 1, "12": 1, "13": 1, "14": 1, "15": 1, "16": 1, "17": 1, "18": 1, "19": 1, "20": 1,
       "21": 1, "22": 1, "23": 1, "24": 1, "25": 1, "26": 1, "27": 1, "28": 1, "29": 1, "30": 1,
       "31": 1, "32": 1, "33": 1, "34": 1, "35": 1, "36": 1, "37": 1, "38": 1, "39": 1, "40": 1,
@@ -335,8 +345,7 @@ const PRODUCTS = [
       "81": 1, "82": 1, "83": 1, "84": 1, "85": 1, "86": 1, "87": 1, "88": 1, "89": 1, "90": 1,
       "91": 1, "92": 1, "93": 1, "94": 1, "95": 1, "96": 1, "97": 1, "98": 1, "99": 1, "100": 1,
       "101": 1, "102": 1, "103": 1, "104": 1, "105": 1, "106": 1, "107": 1, "108": 1, "109": 1, "110": 1,
-      "111": 1, "112": 1, "113": 1, "114": 1, "115": 1, "116": 1, "117": 1, "118": 1, "119": 1, "120": 1,
-      "121": 1, "122": 1, "123": 1, "124": 1, "125": 1, "126": 1
+      "111": 1, "112": 1, "113": 1
     } },
   /* NECKLACES — same "jewelry" category as the bracelets/rings above
      (shows up under the same Jewelry filter pill), just a different kind
