@@ -320,15 +320,15 @@ const PRODUCTS = [
     } },
 
   { id: "j5", name: "Silver Ring", category: "jewelry", price: 125, desc: "Shein rings.Please Check the size and article number before ordering", tag: null,
-    image: "jik/silverr 1.webp",
+    image: "jik/silverr 7.webp",
     media: [
-      { type: "image", src: "jik/silverr 1.webp" },
-      { type: "image", src: "jik/silverr 2.webp" },
-      { type: "image", src: "jik/silverr 3.webp" },
-      { type: "image", src: "jik/silverr 4.webp" },
-      { type: "image", src: "jik/silverr 5.webp" },
+      { type: "image", src: "jik/silverr 7.webp" },
       { type: "image", src: "jik/silverr 6.webp" },
-       { type: "image", src: "jik/silverr 7.webp" }
+      { type: "image", src: "jik/silverr 5.webp" },
+      { type: "image", src: "jik/silverr 4.webp" },
+      { type: "image", src: "jik/silverr 3.webp" },
+      { type: "image", src: "jik/silverr 2.webp" },
+       { type: "image", src: "jik/silverr 1.webp" }
       ],
     // 126 articles total. Change any single number below to set that
     // article's exact stock; every entry defaults to 1 (one-of-a-kind).
