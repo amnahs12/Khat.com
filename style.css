@@ -233,11 +233,10 @@ button { cursor: pointer; }
    Hero — small square-thumbnail product carousel. The whole .slideshow
    frame is capped at a fixed max-width (see below) so it stays a small,
    consistent size on every screen instead of stretching to fill wide
-   viewports — that's what made it look "too big" / oddly magnified on
-   larger screens before. script.js still measures the frame and sets
-   each card's pixel width directly (inline style), and additionally
-   clamps that width to a small maximum, so exactly 3 small thumbnails
-   always fit, on any device.
+   viewports. script.js still measures the frame and sets each card's
+   pixel width directly (inline style), and additionally clamps that
+   width to a small maximum, so exactly 3 small thumbnails always fit,
+   on any device.
    ========================================================================== */
 .hero { padding: 40px 0 48px; }
 .hero-inner {
@@ -555,6 +554,78 @@ button { cursor: pointer; }
 .about h2 { font-size: 1.5rem; }
 
 /* ==========================================================================
+   Reviews
+   ========================================================================== */
+.reviews { padding: 10px 0 80px; }
+.reviews .shop-header { align-items: center; }
+
+#reviewFormError { color: var(--oxblood-light); font-weight: 600; }
+
+.review-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 20px;
+}
+
+.review-card {
+  background: var(--bark);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  padding: 18px 20px;
+  box-shadow: var(--shadow-sm);
+}
+.review-card-head { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-bottom: 2px; }
+.review-name { font-family: var(--font-mono); font-weight: 700; font-size: 0.88rem; color: var(--parchment-pale); }
+.review-stars { color: var(--slate-light); font-size: 0.85rem; letter-spacing: 1px; }
+.review-star.is-filled { color: var(--oxblood-light); }
+.review-date { font-family: var(--font-mono); font-size: 0.7rem; color: var(--parchment-deep); margin: 0 0 10px; }
+.review-text { font-size: 0.88rem; color: var(--parchment); margin: 0 0 12px; line-height: 1.55; }
+
+.review-photos { display: flex; gap: 8px; flex-wrap: wrap; }
+.review-photos img {
+  width: 72px;
+  height: 72px;
+  object-fit: cover;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--line);
+}
+
+/* Star picker in the "write a review" form */
+.star-picker { display: flex; gap: 6px; margin-top: 4px; }
+.star-btn {
+  background: none;
+  border: none;
+  font-size: 1.6rem;
+  line-height: 1;
+  color: var(--slate-light);
+  padding: 2px;
+  transition: color var(--dur) ease, transform var(--dur) ease;
+}
+.star-btn:hover { transform: scale(1.08); }
+.star-btn.is-active { color: var(--oxblood-light); }
+
+.review-image-preview { display: flex; gap: 10px; flex-wrap: wrap; margin: 10px 0 16px; }
+.review-preview-thumb { position: relative; width: 64px; height: 64px; }
+.review-preview-thumb img { width: 100%; height: 100%; object-fit: cover; border-radius: var(--radius-sm); border: 1px solid var(--line); }
+.review-preview-remove {
+  position: absolute;
+  top: -6px;
+  right: -6px;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: var(--oxblood);
+  color: var(--parchment-pale);
+  border: none;
+  font-size: 0.85rem;
+  line-height: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.review-preview-remove:hover { background: var(--oxblood-light); }
+
+/* ==========================================================================
    Footer
    ========================================================================== */
 .site-footer { padding: 40px 0; background: var(--header-bg); border-top: 1px solid rgba(30,38,47,0.15); }
@@ -764,4 +835,5 @@ button { cursor: pointer; }
   .controls { flex-direction: column; align-items: stretch; }
   .field-row { grid-template-columns: 1fr; }
   .cart-drawer { width: 100%; }
+  .review-grid { grid-template-columns: 1fr; }
 }
